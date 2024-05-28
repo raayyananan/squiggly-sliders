@@ -47,7 +47,7 @@
 
     // [0,1,2,3].map(n => {addSlider(n == 2 ? '--md-sys-color-tertiary' : '--md-sys-color-primary')});
     addSlider();
-    addSlider('--md-sys-color-secondary', '--md-sys-color-on-surface', 7, 0, 0.1, 2); // 0.07, 0.1
+    addSlider('--md-sys-color-secondary', '--md-sys-color-on-surface', 7, 0, 0.6, 2); // 0.07, 0.1
     addSlider('--md-sys-color-tertiary');
     addSlider('--md-sys-color-primary', '--md-sys-color-on-surface', activeAmplitude, 0, 1, 1);
 
