@@ -2,7 +2,7 @@
     import SquigglySlider from '$lib/squigglySlider.svelte';
     import Button from '../lib/button.svelte';
     import { fade, slide } from 'svelte/transition';
-    import { translateIn, translateOut, fadeSlide } from '$lib/translatein.js';
+    import { translateIn, translateOut, fadeSlide } from '$lib/translateIn.js';
     import { backOut, cubicOut, expoOut } from 'svelte/easing';
     import { writable } from 'svelte/store';
     import { Toaster, toast } from 'svelte-sonner';
