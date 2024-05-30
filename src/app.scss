@@ -114,30 +114,13 @@
 
 
     --slider-color-1: #616118;
-    --slider-color-1-gradient-stop: #797943;
-    
     --slider-color-2: #3d6657;
-    --slider-color-2-gradient-stop: #577f70;
-    
     --slider-color-3: #006c91;
-    --slider-color-3-gradient-stop: #1e86ac;
-    
     --slider-color-4: #770043;
-    --slider-color-4-gradient-stop: #99125d;
-    
     --slider-color-5: #a41138;
-    --slider-color-5-gradient-stop: #be3658;
-    
     --slider-color-6: #ae3761;
-    --slider-color-6-gradient-stop: #c55d80;
-    
     --slider-color-7: #042f2e;
-    --slider-color-7-gradient-stop: #26504f;
-    
     --slider-color-8: #9c4146;
-    --slider-color-8-gradient-stop: #b85e62;
-    
-
 
     @media (prefers-color-scheme: dark) {
         --slider-color-1: #b4b446;
@@ -148,6 +131,16 @@
         --slider-color-7: #127372;
         --slider-color-8: #9c4146;
     }
+
+    --slider-passive-color-1: var(--md-sys-color-surface-container-highest);
+    --slider-passive-color-2: var(--md-sys-color-on-surface);
+    --slider-passive-color-3: var(--md-sys-color-secondary-container);
+    --slider-passive-color-4: var(--md-sys-color-inverse-surface);
+
+    --slider-passive-color-1-text: var(--md-sys-color-on-surface);
+    --slider-passive-color-2-text: var(--md-sys-color-inverse-on-surface);
+    --slider-passive-color-3-text: var(--md-sys-color-on-surface);
+    --slider-passive-color-4-text: var(--md-sys-color-inverse-on-surface);
 }
 
 html, body {
@@ -205,10 +198,10 @@ html, body {
     --primary-gradient-background-primary: var(--md-sys-color-primary);
     --on-surface-gradient-background-on-surface: var(--md-sys-color-on-surface);
 }
-.primary-gradient-background, .primary-container-gradient-background, .on-surface-gradient-background {
+.primary-gradient-background, .primary-container-gradient-background, .on-surface-gradient-background,.bg-light-gradient {
     // transition: all 100ms, color 0ms, --p1 100ms, --p2 100ms, --c1 100ms, --c2 100ms, --c3 100ms, --primary-gradient-background-primary 100ms, --on-surface-gradient-background-on-surface 100ms, --md-sys-color-surface-container-highest 100ms, --md-sys-color-inverse-surface 100ms;
     transition: all 100ms, color 0ms, --p1 100ms, --p2 100ms;
-    transition-delay: all 0ms, background 150ms;
+    &.bg-light-gradient {background: linear-gradient(180deg, transparent var(--p1), rgba(255,255,255,0.17) var(--p2), transparent var(--p3));}
     &.primary-gradient-background {background: linear-gradient(180deg, var(--primary-gradient-background-primary) var(--p1), var(--c2) var(--p2), var(--primary-gradient-background-primary) var(--p3));}
     &.on-surface-gradient-background {background: linear-gradient(180deg, var(--on-surface-gradient-background-on-surface) var(--p1), var(--md-sys-color-on-surface-variant) var(--p2), var(--on-surface-gradient-background-on-surface) var(--p3));}
     &.primary-container-gradient-background {
@@ -271,4 +264,4 @@ html, body {
     font-variation-settings: 'FILL' 0, 'wght' 800, 'GRAD' 0, 'opsz' 48;
 }
 
-.duration-300 {transition-duration: 200ms;}
+.duration-300 {transition-duration: 250ms;}
