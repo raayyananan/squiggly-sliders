@@ -102,7 +102,7 @@
         --md-sys-color-surface-container-highest: rgb(54 53 44);
     }
 
-    --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --md-sys-motion-easing-emphasized: cubic-bezier(0.4, 0, 0, 1);
     --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
     --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15);
     --custom-easing-emphasized: var(--md-sys-motion-easing-emphasized);
@@ -111,6 +111,43 @@
         0.66 20.6%, 0.765 24.6%, 0.845 30.4%, 0.883 35.1%, 0.916 40.6%, 0.942 47.2%,
         0.963 55%, 0.991 74.4%, 1
     );
+
+
+    --slider-color-1: #616118;
+    --slider-color-1-gradient-stop: #797943;
+    
+    --slider-color-2: #3d6657;
+    --slider-color-2-gradient-stop: #577f70;
+    
+    --slider-color-3: #006c91;
+    --slider-color-3-gradient-stop: #1e86ac;
+    
+    --slider-color-4: #770043;
+    --slider-color-4-gradient-stop: #99125d;
+    
+    --slider-color-5: #a41138;
+    --slider-color-5-gradient-stop: #be3658;
+    
+    --slider-color-6: #ae3761;
+    --slider-color-6-gradient-stop: #c55d80;
+    
+    --slider-color-7: #042f2e;
+    --slider-color-7-gradient-stop: #26504f;
+    
+    --slider-color-8: #9c4146;
+    --slider-color-8-gradient-stop: #b85e62;
+    
+
+
+    @media (prefers-color-scheme: dark) {
+        --slider-color-1: #b4b446;
+        --slider-color-3: #00afe9;
+        --slider-color-4: #b41b71;
+        --slider-color-5: #d21c4c;
+        --slider-color-6: #be3f6b;
+        --slider-color-7: #127372;
+        --slider-color-8: #9c4146;
+    }
 }
 
 html, body {
@@ -163,11 +200,17 @@ html, body {
     initial-value: var(--md-sys-color-primary);
     inherits: false;
 }
+
+:root {
+    --primary-gradient-background-primary: var(--md-sys-color-primary);
+    --on-surface-gradient-background-on-surface: var(--md-sys-color-on-surface);
+}
 .primary-gradient-background, .primary-container-gradient-background, .on-surface-gradient-background {
-    transition: all 100ms, color 0ms, --p1 100ms, --p2 100ms, --c1 100ms, --c2 100ms, --c3 100ms;
-    
-    &.primary-gradient-background {background: linear-gradient(180deg, var(--md-sys-color-primary) var(--p1), var(--c2) var(--p2), var(--md-sys-color-primary) var(--p3));}
-    &.on-surface-gradient-background {background: linear-gradient(180deg, var(--md-sys-color-on-surface) var(--p1), var(--md-sys-color-on-surface-variant) var(--p2), var(--md-sys-color-on-surface) var(--p3));}
+    // transition: all 100ms, color 0ms, --p1 100ms, --p2 100ms, --c1 100ms, --c2 100ms, --c3 100ms, --primary-gradient-background-primary 100ms, --on-surface-gradient-background-on-surface 100ms, --md-sys-color-surface-container-highest 100ms, --md-sys-color-inverse-surface 100ms;
+    transition: all 100ms, color 0ms, --p1 100ms, --p2 100ms;
+    transition-delay: all 0ms, background 150ms;
+    &.primary-gradient-background {background: linear-gradient(180deg, var(--primary-gradient-background-primary) var(--p1), var(--c2) var(--p2), var(--primary-gradient-background-primary) var(--p3));}
+    &.on-surface-gradient-background {background: linear-gradient(180deg, var(--on-surface-gradient-background-on-surface) var(--p1), var(--md-sys-color-on-surface-variant) var(--p2), var(--on-surface-gradient-background-on-surface) var(--p3));}
     &.primary-container-gradient-background {
         background: linear-gradient(180deg, var(--md-sys-color-surface-container-highest) var(--p1), var(--md-sys-color-surface-container-highest) var(--p2), var(--md-sys-color-secondary-container) var(--p3));
         > * {filter: none}
@@ -217,6 +260,7 @@ html, body {
 .easing-accelerate {transition-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);}
 .easing-decelerate {transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);}
 .easing-bounce-out {transition-timing-function: cubic-bezier(0.4, -0.55, 0.265, 2)}
+.easing-bounce-out-light {transition-timing-function: cubic-bezier(0.4, 0, 0.265, 1.55)}
 
 .raleway {font-family: 'Raleway', sans-serif;}
 
@@ -226,3 +270,5 @@ html, body {
 .material-symbols-rounded.bold {
     font-variation-settings: 'FILL' 0, 'wght' 800, 'GRAD' 0, 'opsz' 48;
 }
+
+.duration-300 {transition-duration: 200ms;}
