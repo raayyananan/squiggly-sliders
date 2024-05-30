@@ -151,7 +151,7 @@
     };
 
     export const resetWidthAndHeight = () => {
-        console.log(rangeSlider); // if this line gets removed, rangeSlider is 'null' ???? a fix is welcome
+        // console.log(rangeSlider); // if this line gets removed, rangeSlider is 'null' ???? a fix is welcome
         canvas.width = rangeSlider.parentElement.offsetWidth;
         ctx.width = canvas.width;
         ctx.height = canvas.height = 50;
