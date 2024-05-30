@@ -283,9 +283,9 @@
                             </div>
 
                             <div class="w-full flex-shrink-0 {passivePickerOpen ? 'flex-1 h-28' : 'flex-0 h-0'} overflow-hidden transition-all duration-300 easing-emphasized">
-                                <div class="{passivePickerOpen ? 'opacity-1 delay-100 duration-200' : 'opacity-0 scale-90 duration-75'} w-full h-full grid grid-cols-2 gap-2 p-3 pt-0 place-items-center">
-                                    {#each samplePassiveColors as color}
-                                    <button on:click={() => {setProperties(activeColor, color)}} tabindex={passivePickerOpen ? 0 : -1} class="h-full w-full rounded-xl border border-b-2 border-white/15 relative group/button" style="background-color: {color[0] === '-' ? `var(${color})` : `${color}`}">
+                                <div class="{passivePickerOpen ? 'opacity-1 delay-100 duration-200' : 'opacity-0 scale-90 duration-75'} w-full h-full grid grid-cols-4 gap-2 p-3 pt-0 place-items-center">
+                                    {#each samplePassiveColors as color, index}
+                                    <button on:click={() => {setProperties(activeColor, color)}} tabindex={passivePickerOpen ? 0 : -1} class="{index % 2 === 0 ? '' : 'col-span-3'} h-full w-full rounded-xl border border-b-2 border-white/15 relative group/button" style="background-color: {color[0] === '-' ? `var(${color})` : `${color}`}">
                                         <div class="absolute top-0 left-0 w-full h-full rounded-xl bg-gradient-to-br from-transparent to-transparent via-white/15 opacity-50 group-hover/button:opacity-100 transition duration-150"></div>
                                     </button>
                                     {/each}
