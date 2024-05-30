@@ -7,7 +7,7 @@
 
 <slot></slot>
 
-<!-- <div class="grain-overlay opacity-50 dark:opacity-25 h-full w-full top-0 left-0 fixed pointer-events-none"></div> -->
+<div class="grain-overlay opacity-50 dark:opacity-25 h-full w-full top-0 left-0 fixed pointer-events-none"></div>
 
 <style>
     .grain-overlay {
