@@ -7,6 +7,7 @@
     import { writable } from 'svelte/store';
     import { Toaster, toast } from 'svelte-sonner';
     import ColorPicker from 'svelte-awesome-color-picker';
+    import { onMount } from 'svelte';
 
     let sliders = [
     ];
@@ -23,6 +24,12 @@
     let passiveRgb = undefined;
     // these settings themselves will be stores but the prop that's actually passed in will be the value of the stores
 
+    let controlCentreDown = false;
+
+    onMount(() => {
+        controlCentreDown = false;
+    })
+
     let idCount = 0;
     const addSlider = (
             active = '--md-sys-color-primary',
@@ -35,16 +42,20 @@
             val = 4 + Math.floor(Math.random() * (4))
         ) => 
     {   
-        // if (typeof window !== 'undefined') {
-        //     if ((sliders.length - 1) * (50 + 16 * 4) > window.innerHeight) {
-        //         toast.error(`Please remove a slider to add another`, {
-        //             classes: {
-        //                 toast: "raleway flex items-center rounded-xl h-12 easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
-        //             }
-        //         })
-        //         return;
-        //     }
-        // }
+        if (typeof window !== 'undefined') {
+            // if ((sliders.length - 1) * (50 + 16 * 4) > window.innerHeight) {
+            //     toast.error(`Please remove a slider to add another`, {
+            //         classes: {
+            //             toast: "raleway flex items-center rounded-xl h-12 easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
+            //         }
+            //     })
+            //     return;
+            // }
+            setTimeout(() => {
+                if (sliders.length <= 4) return;
+                controlCentreDown = true;
+            }, 100)
+        }
         const newSlider = {
             id: idCount + 1,
             active,
@@ -142,6 +153,10 @@
     //     }
     // }
 
+    function toggleControlCentre() {
+        controlCentreDown = !controlCentreDown;
+    }
+
     const sampleColors = [
         '--slider-color-1',
         '--slider-color-2',
@@ -163,11 +178,16 @@
 
 </script>
 
-<Toaster position="bottom-left" />
+<div class="hidden md:block">
+    <Toaster position="bottom-left" />
+</div>
+<div class="block md:hidden">
+    <Toaster position="top-left" />
+</div>
 
 <div class="w-full h-full flex flex-col md:flex-row">
     
-    <div class="sliders-container flex-auto h-full flex flex-col items-center md:justify-center overflow-y-scroll scrollbar-appearance-none py-6 md:py-12">
+    <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pt-6 pb-16 md:py-12">
         <!-- <ColorPicker on:input={(e) => {inputColor(e, 'active')}} /> on:input={(e) => {inputColor(e, 'active')}} -->
         {#each sliders as slider (slider.id)}
         <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-full md:w-116 h-14 flex items-center justify-between px-4 gap-4 group {slider.id > 0 && 'mt-4'}">
@@ -186,7 +206,9 @@
             <h3 in:fade={{delay: 350, duration: 150}} class="font-bold text-sm">Add a slider!</h3>
         {/if}
     </div>
-    <div class="w-full md:w-116 p-4 flex-shrink-0">
+    <div class="w-full md:w-116 p-4 flex-shrink-0 fixed md:static bottom-0 left-0 transition duration-[350ms] easing-emphasized md:transition-none
+        {controlCentreDown ? 'translate-y-[calc(100%-4rem)] md:translate-y-0' : ''}">
+
         <div class="h-full rounded-xl gap-4 flex flex-col">
 
             <div class="hidden md:flex card-background pl-6 shadow shadow-black/15 rounded-2xl flex-col gap-4">
@@ -209,7 +231,11 @@
                 </div>
             </div>
 
-            <div class="card-background p-6 shadow shadow-black/15 rounded-2xl flex flex-col gap-6 flex-auto">
+            <div class="card-background p-6 pt-0 md:pt-6 shadow-[0_-1px_5px_1px_rgba(0,0,0,0.075)] md:shadow md:shadow-black/15 rounded-2xl flex flex-col gap-5 md:gap-6 flex-auto">
+                <button on:click={toggleControlCentre}
+                        class="flex md:hidden w-full h-4 pt-2 box-content items-center justify-center">
+                    <div class="material-symbols-rounded scale-x-125 {controlCentreDown ? '-scale-y-90' : 'scale-y-90'} transition-transform text-outline">keyboard_arrow_down</div>
+                </button>
                 <div class="flex items-center justify-between">
                     <h2 class="font-extrabold">Create your own</h2>
                     <button on:click={resetProperties} class="reset-button text-on-surface-variant  hover:bg-surface-container-highest focus-visible:bg-surface-container-highest hover:text-on-surface focus-visible:text-on-surface rounded-full h-7 w-7 flex items-center justify-center">
