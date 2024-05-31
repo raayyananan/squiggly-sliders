@@ -54,7 +54,12 @@
             setTimeout(() => {
                 if (sliders.length <= 4) return;
                 controlCentreDown = true;
-            }, 100)
+                const slidersContainer = document.querySelector('.sliders-container');
+                slidersContainer.scrollTo({
+                    top: slidersContainer.scrollHeight,
+                    behaviour: 'smooth'
+                })
+            }, 150)
         }
         const newSlider = {
             id: idCount + 1,
@@ -90,6 +95,7 @@
         activeWavelength = slider.activeWavelength;
         passiveWavelength = slider.passiveWavelength;
         speedFactor = slider.speedFactor;
+        controlCentreDown = false;
         toast.success(` Properties copied to custom slider`, {
             classes: {
                 toast: "raleway flex items-center rounded-xl h-12 easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
@@ -207,7 +213,7 @@
         {/if}
     </div>
     <div class="w-full md:w-116 p-4 flex-shrink-0 fixed md:static bottom-0 left-0 transition duration-[350ms] easing-emphasized md:transition-none
-        {controlCentreDown ? 'translate-y-[calc(100%-4rem)] md:translate-y-0' : ''}">
+        {controlCentreDown ? 'translate-y-[calc(100%-3rem)] md:translate-y-0' : ''}">
 
         <div class="h-full rounded-xl gap-4 flex flex-col">
 
@@ -231,12 +237,12 @@
                 </div>
             </div>
 
-            <div class="card-background p-6 pt-0 md:pt-6 shadow-[0_-1px_5px_1px_rgba(0,0,0,0.075)] md:shadow md:shadow-black/15 rounded-2xl flex flex-col gap-5 md:gap-6 flex-auto">
+            <div class="card-background p-6 pt-0 md:pt-6 shadow-[0_-3px_5px_1px_rgba(0,0,0,0.075)] md:shadow md:shadow-black/15 rounded-2xl flex flex-col gap-5 md:gap-6 flex-auto">
                 <button on:click={toggleControlCentre}
                         class="flex md:hidden w-full h-4 pt-2 box-content items-center justify-center">
                     <div class="material-symbols-rounded scale-x-125 {controlCentreDown ? '-scale-y-90' : 'scale-y-90'} transition-transform text-outline">keyboard_arrow_down</div>
                 </button>
-                <div class="flex items-center justify-between">
+                <div class="hidden md:flex items-center justify-between">
                     <h2 class="font-extrabold">Create your own</h2>
                     <button on:click={resetProperties} class="reset-button text-on-surface-variant  hover:bg-surface-container-highest focus-visible:bg-surface-container-highest hover:text-on-surface focus-visible:text-on-surface rounded-full h-7 w-7 flex items-center justify-center">
                         <div class="material-symbols-rounded text-lg font-semibold">replay</div>
@@ -423,7 +429,7 @@
                 </div>
 
 
-                <div class="flex items-center justify-between">
+                <div class="hidden md:flex items-center justify-between">
                     <h2 class="font-extrabold">Preview</h2>
                 </div>
 
