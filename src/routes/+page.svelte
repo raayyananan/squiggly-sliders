@@ -35,16 +35,16 @@
             val = 4 + Math.floor(Math.random() * (4))
         ) => 
     {   
-        if (typeof window !== 'undefined') {
-            if ((sliders.length - 1) * (50 + 16 * 4) > window.innerHeight) {
-                toast.error(`Please remove a slider to add another`, {
-                    classes: {
-                        toast: "raleway flex items-center rounded-xl h-12 easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
-                    }
-                })
-                return;
-            }
-        }
+        // if (typeof window !== 'undefined') {
+        //     if ((sliders.length - 1) * (50 + 16 * 4) > window.innerHeight) {
+        //         toast.error(`Please remove a slider to add another`, {
+        //             classes: {
+        //                 toast: "raleway flex items-center rounded-xl h-12 easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
+        //             }
+        //         })
+        //         return;
+        //     }
+        // }
         const newSlider = {
             id: idCount + 1,
             active,
@@ -165,17 +165,19 @@
 
 <Toaster position="bottom-left" />
 
-<div class="w-full h-full flex">
+<div class="w-full h-full flex flex-col md:flex-row">
     
-    <div class="sliders-container flex-auto h-full flex flex-col items-center justify-center overflow-y-scroll scrollbar-appearance-none py-12">
+    <div class="sliders-container flex-auto h-full flex flex-col items-center md:justify-center overflow-y-scroll scrollbar-appearance-none py-6 md:py-12">
         <!-- <ColorPicker on:input={(e) => {inputColor(e, 'active')}} /> on:input={(e) => {inputColor(e, 'active')}} -->
         {#each sliders as slider (slider.id)}
-        <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-116 h-14 flex items-center gap-4 group {slider.id > 0 && 'mt-4'}">
-                <button on:click={() => {copySliderProperties(slider.id)}} class="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
+        <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-full md:w-116 h-14 flex items-center justify-between px-4 gap-4 group {slider.id > 0 && 'mt-4'}">
+                <button on:click={() => {copySliderProperties(slider.id)}} class="opacity-1 md:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
                     <div class="material-symbols-rounded text-lg font-semibold">content_copy</div>
                 </button>
-                <SquigglySlider min=0 max=10 active={slider.active} passive={slider.passive} activeAmplitude={slider.activeAmplitude} passiveAmplitude={slider.passiveAmplitude} activeWavelength={slider.activeWavelength} passiveWavelength={slider.passiveWavelength} speedFactor={slider.speedFactor} value={slider.val}></SquigglySlider>   
-                <button on:click={() => {removeSlider(slider.id)}} class="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
+                <div class="w-8/12 md:w-full">
+                    <SquigglySlider min=0 max=10 active={slider.active} passive={slider.passive} activeAmplitude={slider.activeAmplitude} passiveAmplitude={slider.passiveAmplitude} activeWavelength={slider.activeWavelength} passiveWavelength={slider.passiveWavelength} speedFactor={slider.speedFactor} value={slider.val}></SquigglySlider>   
+                </div>
+                <button on:click={() => {removeSlider(slider.id)}} class="opacity-1 md:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
                     <div class="material-symbols-rounded text-lg font-semibold">close</div>
                 </button>
             </div>
@@ -184,10 +186,10 @@
             <h3 in:fade={{delay: 350, duration: 150}} class="font-bold text-sm">Add a slider!</h3>
         {/if}
     </div>
-    <div class="w-116 p-4 flex-shrink-0">
+    <div class="w-full md:w-116 p-4 flex-shrink-0">
         <div class="h-full rounded-xl gap-4 flex flex-col">
 
-            <div class="card-background pl-6 shadow shadow-black/15 rounded-2xl flex flex-col gap-4">
+            <div class="hidden md:flex card-background pl-6 shadow shadow-black/15 rounded-2xl flex-col gap-4">
                 <div class="h-16 flex items-center justify-between">
                     <h2 class="font-extrabold">Squiggly Sliders</h2>
                     <button class="global-theme-button button-shadow-left flex items-center w-36 justify-center h-full primary-gradient-background text-on-primary rounded-r-2xl group md:active:brightness-95">

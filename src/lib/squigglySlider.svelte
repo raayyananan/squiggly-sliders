@@ -203,6 +203,8 @@
     .range-container {
         position: relative;
         width: 100%;
+        max-width: 100%;
+        min-width: 0px;
     }
     input[type="range"] {
         position: absolute;
