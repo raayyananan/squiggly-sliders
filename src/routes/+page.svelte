@@ -98,7 +98,7 @@
         controlCentreDown = false;
         toast.success(` Properties copied to custom slider`, {
             classes: {
-                toast: "raleway flex items-center rounded-xl h-12 easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
+                toast: "raleway flex items-center rounded-xl h-12 md:easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
             }
         })
     }
