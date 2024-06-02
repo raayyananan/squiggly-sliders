@@ -146,6 +146,7 @@
 html, body {
     height: 100%;
     width: 100%;
+    overscroll-behavior: none;
 }
 
 * {
@@ -243,6 +244,9 @@ html, body {
     background-image: linear-gradient(150deg, var(--md-sys-color-surface-container-low) 15%, var(--md-sys-color-surface-dim) 95%);
 }
 
+button {
+    touch-action: manipulation;
+}
 
 @tailwind base;
 @tailwind components;
@@ -253,7 +257,9 @@ html, body {
 .easing-accelerate {transition-timing-function: var(--md-sys-motion-easing-emphasized-accelerate);}
 .easing-decelerate {transition-timing-function: var(--md-sys-motion-easing-emphasized-decelerate);}
 .easing-bounce-out {transition-timing-function: cubic-bezier(0.4, -0.55, 0.265, 2)}
+.easing-quint-out {transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);}
 .easing-bounce-out-light {transition-timing-function: cubic-bezier(0.4, 0, 0.265, 1.55)}
+.no-transition-important {transition: none !important}
 
 .raleway {font-family: 'Raleway', sans-serif;}
 
@@ -265,3 +271,7 @@ html, body {
 }
 
 .duration-300 {transition-duration: 250ms;}
+
+// button, .flex-col {
+//     border: 1px dashed rgba(188, 131, 0, 0.5)
+// }

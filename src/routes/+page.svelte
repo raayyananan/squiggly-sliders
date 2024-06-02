@@ -53,7 +53,7 @@
             // }
             setTimeout(() => {
                 if (sliders.length <= 4) return;
-                controlCentreDown = true;
+                // controlCentreDown = true;
                 const slidersContainer = document.querySelector('.sliders-container');
                 slidersContainer.scrollTo({
                     top: slidersContainer.scrollHeight,
@@ -182,6 +182,51 @@
     let activePickerOpen = false;
     let passivePickerOpen = false;
 
+
+    let initialTranslation = 0;
+    let controlCentreCard, controlCentreButton;
+    let start, velocity;
+    let point1 = {}, point2 = {};
+    let swiping = false;
+    function swipeStart(e) {
+        start = e.touches ? e.touches[0].clientY : e.clientY;
+        swiping = true;
+        controlCentreCard.classList.add('no-transition-important');
+    }
+    function swipeMove(e) {
+        if (!swiping) return;
+
+        // Shift the points
+        point1 = point2;
+
+        // Record the position of the current touchmove event
+        point2 = {
+            time: new Date().getTime(),
+            y: e.touches ? e.touches[0].clientY : e.clientY
+        };
+
+        velocity = (point2.y - point1.y) / (point2.time - point1.time);
+        const dT = point2.y - start;
+        controlCentreCard.style.translate = `0 ${initialTranslation + dT}px`;
+        // if (dT > 75) {
+        //     swipeEnd();
+        // }
+
+    }
+    function swipeEnd() {
+        if (velocity == 0) return;
+        controlCentreCard.classList.remove('no-transition-important');
+        swiping = false;
+        if (velocity >= 0) {
+            controlCentreDown = true;
+        } 
+        else {
+            controlCentreDown = false;
+        }
+        controlCentreCard.style.translate = `0 ${initialTranslation}px`;
+        velocity = 0;
+    }
+
 </script>
 
 <div class="hidden md:block">
@@ -191,19 +236,19 @@
     <Toaster position="top-left" />
 </div>
 
-<div class="w-full h-full flex flex-col md:flex-row">
+<div class="w-full h-full flex flex-col md:flex-row overflow-hidden">
     
     <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pt-6 pb-16 md:py-12">
         <!-- <ColorPicker on:input={(e) => {inputColor(e, 'active')}} /> on:input={(e) => {inputColor(e, 'active')}} -->
         {#each sliders as slider (slider.id)}
-        <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-full md:w-116 h-14 flex items-center justify-between px-4 gap-4 group {slider.id > 0 && 'mt-4'}">
-                <button on:click={() => {copySliderProperties(slider.id)}} class="opacity-1 md:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
+        <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-full md:w-116 h-14 flex items-center justify-evenly md:justify-center lg:justify-between px-4 gap-4 group flex-shrink-0 {slider.id > 0 && 'mt-4'}">
+                <button on:click={() => {copySliderProperties(slider.id)}} class="opacity-1 lg:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-outline lg:text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
                     <div class="material-symbols-rounded text-lg font-semibold">content_copy</div>
                 </button>
-                <div class="w-8/12 md:w-full">
+                <div class="w-8/12 md:w-7/12 lg:w-full">
                     <SquigglySlider min=0 max=10 active={slider.active} passive={slider.passive} activeAmplitude={slider.activeAmplitude} passiveAmplitude={slider.passiveAmplitude} activeWavelength={slider.activeWavelength} passiveWavelength={slider.passiveWavelength} speedFactor={slider.speedFactor} value={slider.val}></SquigglySlider>   
                 </div>
-                <button on:click={() => {removeSlider(slider.id)}} class="opacity-1 md:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
+                <button on:click={() => {removeSlider(slider.id)}} class="opacity-1 lg:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-outline lg:text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
                     <div class="material-symbols-rounded text-lg font-semibold">close</div>
                 </button>
             </div>
@@ -212,12 +257,13 @@
             <h3 in:fade={{delay: 350, duration: 150}} class="font-bold text-sm">Add a slider!</h3>
         {/if}
     </div>
-    <div class="w-full md:w-116 p-4 flex-shrink-0 fixed md:static bottom-0 left-0 transition duration-[350ms] easing-emphasized md:transition-none
-        {controlCentreDown ? 'translate-y-[calc(100%-3rem)] md:translate-y-0' : ''}">
+    <!-- <div class="{controlCentreDown ? 'flex-0' : 'flex-1'} transition-all duration-300 easing-emphasized"></div> -->
+    <div class="w-full md:w-116 p-4 static bottom-0 left-0 ">
+        <!-- translate-y-[calc(100%-3rem)] md:translate-y-0 -->
+        <div class="w-full md:h-full rounded-xl gap-4 flex-col grid items-end justify-stretch md:flex transition-all duration-300 easing-emphasized
+        {controlCentreDown ? 'grid-rows-[0px]' : 'grid-rows-1'} md:grid-rows-1">
 
-        <div class="h-full rounded-xl gap-4 flex flex-col">
-
-            <div class="hidden md:flex card-background pl-6 shadow shadow-black/15 rounded-2xl flex-col gap-4">
+            <div class="hidden md:flex w-full card-background pl-4 md:pl-6 shadow shadow-black/15 rounded-2xl flex-col gap-4">
                 <div class="h-16 flex items-center justify-between">
                     <h2 class="font-extrabold">Squiggly Sliders</h2>
                     <button class="global-theme-button button-shadow-left flex items-center w-36 justify-center h-full primary-gradient-background text-on-primary rounded-r-2xl group md:active:brightness-95">
@@ -237,9 +283,12 @@
                 </div>
             </div>
 
-            <div class="card-background p-6 pt-0 md:pt-6 shadow-[0_-3px_5px_1px_rgba(0,0,0,0.075)] md:shadow md:shadow-black/15 rounded-2xl flex flex-col gap-5 md:gap-6 flex-auto">
-                <button on:click={toggleControlCentre}
-                        class="flex md:hidden w-full h-4 pt-2 box-content items-center justify-center">
+            <div bind:this={controlCentreCard} class="card-background md:flex-auto row-span-auto w-full p-4 md:p-6 pt-0 md:pt-6 shadow-[0_-3px_5px_1px_rgba(0,0,0,0.075)] md:shadow md:shadow-black/15 
+            rounded-2xl flex flex-col gap-4 md:gap-6 flex-auto transition-all duration-500 easing-quint-out
+            {controlCentreDown ? 'translate-y-[calc(100%_-_1.5rem)] md:translate-y-0' : ''}">
+
+                <button on:click={toggleControlCentre} bind:this={controlCentreButton} on:touchstart={swipeStart} on:touchmove={swipeMove} on:touchend={swipeEnd}
+                        class="flex md:hidden w-full h-2 pt-4 pb-1 box-content items-center justify-center">
                     <div class="material-symbols-rounded scale-x-125 {controlCentreDown ? '-scale-y-90' : 'scale-y-90'} transition-transform text-outline">keyboard_arrow_down</div>
                 </button>
                 <div class="hidden md:flex items-center justify-between">
@@ -257,9 +306,10 @@
                             <div transition:fade={{duration: 100}} class="fixed top-0 left-0 w-full h-full z-10 backdrop-blur-sm bg-black/0 dark:bg-white/[2.5%]"></div>
                         {/if}
                         
-                        <div class="relative duration-300 text-on-primary dark:text-on-surface flex-shrink-0 flex flex-col items-center justify-center
+                        <div class="relative duration-300 text-on-primary {activeColor === '--md-sys-color-primary' || activeColor === '--slider-color-1' || activeColor === '--md-sys-color-tertiary' ? '' : 'dark:text-on-surface'} 
+                                    flex-shrink-0 flex flex-col items-center justify-center
                            {activePickerOpen ? 
-                                'w-[calc(100%_+_80px)] translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-l-2xl easing-bounce-out-light' : 
+                                'w-[calc(100%_+_80px)] translate-x-5 md:translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface dark:text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-l-2xl easing-bounce-out-light' : 
                                 'w-full h-full rounded-l-2xl easing-emphasized z-0'}"
                             style="{activePickerOpen ? '' : `background-color: var(${activeColor})`}">
 
@@ -280,7 +330,7 @@
                                 <div class="{activePickerOpen ? 'opacity-1 delay-100 duration-200' : 'opacity-0 scale-90 duration-75'} w-full h-full grid grid-cols-4 gap-2 p-3 pt-0 place-items-center">
                                     {#each sampleColors as color}
                                     <button on:click={() => {setProperties(color)}} tabindex={activePickerOpen ? 0 : -1} class="h-full w-full rounded-xl border border-b-2 border-white/15 relative group/button" style="background-color: {color[0] === '-' ? `var(${color})` : `${color}`}">
-                                        <div class="absolute top-0 left-0 w-full h-full rounded-xl bg-gradient-to-br from-transparent to-transparent via-white/15 opacity-50 group-hover/button:opacity-100 transition duration-150"></div>
+                                        <div class="absolute top-0 left-0 w-full h-full rounded-xl bg-gradient-to-br from-transparent to-transparent via-white/15 dark:via-black/25 opacity-50 group-hover/button:opacity-100 transition duration-150"></div>
                                     </button>
                                     {/each}
                                 </div>
@@ -297,9 +347,9 @@
                             <div transition:fade={{duration: 100}} class="fixed top-0 left-0 w-full h-full z-10 backdrop-blur-sm bg-black/0 dark:bg-white/[2.5%]"></div>
                         {/if}
                         
-                        <div class="relative duration-300 text-on-primary dark:text-on-surface flex-shrink-0 flex flex-col items-center justify-center
+                        <div class="relative duration-300 text-on-primary {activeColor === '--md-sys-color-primary' || activeColor === '--slider-color-1' ? '' : 'dark:text-on-surface'} flex-shrink-0 flex flex-col items-center justify-center
                            {passivePickerOpen ? 
-                                'w-[calc(100%_+_80px)] -translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-r-2xl easing-bounce-out-light' : 
+                                'w-[calc(100%_+_80px)] -translate-x-5 md:-translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface dark:text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-r-2xl easing-bounce-out-light' : 
                                 'w-full h-full rounded-r-2xl easing-emphasized'}"
                             style="{passivePickerOpen ? '' : `background-color: var(${passiveColor}); color: var(${passiveColor}-text);`}">
 
@@ -320,7 +370,7 @@
                                 <div class="{passivePickerOpen ? 'opacity-1 delay-100 duration-200' : 'opacity-0 scale-90 duration-75'} w-full h-full grid grid-cols-4 gap-2 p-3 pt-0 place-items-center">
                                     {#each samplePassiveColors as color, index}
                                     <button on:click={() => {setProperties(activeColor, color)}} tabindex={passivePickerOpen ? 0 : -1} class="{index % 2 === 0 ? '' : 'col-span-3'} h-full w-full rounded-xl border border-b-2 border-white/15 relative group/button" style="background-color: {color[0] === '-' ? `var(${color})` : `${color}`}">
-                                        <div class="absolute top-0 left-0 w-full h-full rounded-xl bg-gradient-to-br from-transparent to-transparent via-white/15 opacity-50 group-hover/button:opacity-100 transition duration-150"></div>
+                                        <div class="absolute top-0 left-0 w-full h-full rounded-xl bg-gradient-to-br from-transparent to-transparent via-white/15 dark:via-black/15 opacity-50 group-hover/button:opacity-100 transition duration-150"></div>
                                     </button>
                                     {/each}
                                 </div>
@@ -433,9 +483,9 @@
                     <h2 class="font-extrabold">Preview</h2>
                 </div>
 
-                <div class="flex-auto flex flex-col items-center justify-center relative">
+                <div class="flex-auto flex flex-col items-center justify-center relative py-4">
                     {#if passiveColor === '--slider-passive-color-1' || passiveColor == '--slider-passive-color-3'}
-                    <div class="absolute -top-4 left-0 text-xs text-outline flex gap-2  text-balance">
+                    <div class="absolute -top-4 left-0 text-xs text-outline flex dark:hidden gap-2  text-balance">
                         <div class="material-symbols-rounded text-base">info</div>
                         <p>Lighter passive colors cannot be seen properly in the slider preview. Please make sure your sliders have a sufficient contrast ratio. Add slider to view proper result.</p>
                     </div>
