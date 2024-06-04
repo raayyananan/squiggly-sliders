@@ -115,7 +115,7 @@
     }
     @keyframes pin-animation {
         0% {scale: 3.15}
-        70% {scale: 1.5}
+        70% {scale: 1.4}
         100% {scale: 1.85}
     }
     .ios-nav-in {
