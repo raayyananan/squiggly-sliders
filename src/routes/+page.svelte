@@ -26,9 +26,13 @@
     // these settings themselves will be stores but the prop that's actually passed in will be the value of the stores
 
     let controlCentreDown = false;
+    let toasterPosition = 'bottom-left';
 
     onMount(() => {
         controlCentreDown = false;
+        if (window.innerWidth <= 648) {
+            toasterPosition = 'top-left';
+        }
     })
 
     let idCount = 0;
@@ -230,19 +234,24 @@
 
 </script>
 
-<div class="hidden md:block">
-    <Toaster position="bottom-left" />
-</div>
-<div class="block md:hidden">
-    <Toaster position="top-left" />
-</div>
-
+<Toaster bind:position={toasterPosition} />
 <div class="page-container w-full h-full flex flex-col md:flex-row overflow-hidden">
     
-    <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pt-6 pb-16 md:py-12">
-        <!-- <ColorPicker on:input={(e) => {inputColor(e, 'active')}} /> on:input={(e) => {inputColor(e, 'active')}} -->
+    <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pb-16 md:py-12">
+        <div class="sticky top-0 left-0 w-full pt-6 pb-0 px-7 z-10 flex items-center justify-between">
+            <h1 class="text-sm font-bold z-10">Squiggly Sliders</h1>
+            <Modal classes="z-10">
+                <button class="increment-button rounded-full h-6 w-6 active:scale-90 bg-surface-container-high duration-75 text-on-surface flex items-center justify-center">
+                    <div class="material-symbols-rounded text-xs font-bold text-outline">info_i</div>
+                </button>
+            </Modal>
+            <div class="absolute -top-px left-0 w-full h-[125%] pointer-events-none lng"></div>
+            <div class="absolute -top-px left-0 w-full h-[150%] pointer-events-none lng"></div>
+            <div class="absolute -top-px left-0 w-full h-[175%] pointer-events-none lng"></div>
+            <div class="absolute -top-px left-0 w-full h-[175%] pointer-events-none lng"></div>
+        </div>
         {#each sliders as slider (slider.id)}
-        <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-full md:w-116 h-14 flex items-center justify-evenly md:justify-center lg:justify-between px-4 gap-4 group flex-shrink-0 {slider.id > 0 && 'mt-4'}">
+        <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-full md:w-116 h-14 flex items-center justify-between md:justify-center lg:justify-between px-6 md:px-2 gap-4 group flex-shrink-0 {slider.id > 0 && 'mt-3 md:mt-4'}">
                 <button on:click={() => {copySliderProperties(slider.id)}} class="opacity-1 lg:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-outline lg:text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
                     <div class="material-symbols-rounded text-lg font-semibold">content_copy</div>
                 </button>
@@ -281,11 +290,11 @@
                         focus-visible:scale-[1.02] active:scale-[0.97] primary-gradient-background group">
                             <div class="flex items-center">
                                 <div class="text-sm font-bold transition-all duration-200 delay-0 md:group-hover:delay-100 easing-emphasized 
-                                            w-0 overflow-hidden group-hover:mr-1.5 group-hover:w-12">
+                                            w-0 overflow-hidden group-hover:mr-1.5 group-hover:w-12 group-focus-visible:mr-1.5 group-focus-visible:w-12">
                                     <div class="">About</div>
                                 </div>
-                                <div class="text-lg material-symbols-rounded bold -translate-y-[0.5px] transition-all duration-200 delay-0 md:group-hover:delay-100 easing-emphasized
-                                            group-hover:scale-95">
+                                <div class="text-lg material-symbols-rounded bold -translate-y-[0.5px] transition-all duration-200 delay-0 md:group-hover:delay-75 easing-emphasized
+                                            group-hover:scale-95 group-focus-visiblex:scale-95">
                                     info
                                 </div>
                             </div>
@@ -534,6 +543,11 @@
 
 
 <style lang="scss">
+    .lng {
+        background: var(--md-sys-color-surface);
+        background: linear-gradient(180deg, var(--md-sys-color-surface) 0%, rgba(253,249,236,0) 99%);
+    }
+
     .transition-all.duration-300.easing-emphasized {
         transition: all 300ms var(--md-sys-motion-easing-emphasized), z-index 300ms step-end;
     }

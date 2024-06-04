@@ -32,20 +32,20 @@
     }
 </script>
 
-<button role="button" class="h-full flex {classes}" 
+<div class="h-full flex {classes}" 
         on:click={() => {modalVisible = !modalVisible}} aria-label="button">
     <slot />
-</button>
+</div>
 
 {#if modalVisible}
     <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {modalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-10 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
     <div out:scale={{duration: 150, easing: cubicOut, start: 0.9}} 
-    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-108 z-10">
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-108 z-10">
         <div class="ios-nav-in flex flex-col items-center gap-6 w-full h-full p-2 pt-4 bg-surface-container shadow-lg rounded-2xl">
             <div class="flex items-center justify-center relative">
-                <div class="rounded-full bg-primary w-2 h-2 items-center justify-center flex">
-                    <div class="rounded-full w-1 h-1 items-end justify-center flex pb-px pr-px">
-                        <img class="pin w-5 h-5 flex-shrink-0 max-w-none origin-bottom rotate-[30deg]" src="/image.png" alt="ping">
+                <div class="rounded-full bg-primary w-3 h-3 items-center justify-center flex">
+                    <div class="rounded-full w-3 h-3 items-end justify-center flex">
+                        <img class="pin w-5 h-5 flex-shrink-0 max-w-none origin-bottom rotate-[30deg] -translate-x-px -translate-y-0.5" src="/image.png" alt="ping">
                     </div>
                 </div>
                 <!-- <svg class="absolute bottom-1/2 left-1/2 -translate-x-1/2 rotate-[42deg]
@@ -65,11 +65,13 @@
             <div class="px-[10%] flex flex-col gap-1 text-center">
                 <p class="text-sm text-balance">This is a web implementation of the M3 'Material You' squiggly sliders often found in Google design commercials, and in the Android 14 music player.</p>
             </div>
-            <div class="h-48 flex items-center justify-center pt-4 mt-3">
+            <div class="h-48 flex items-center justify-center pt-4 mt-3 relative gr">
                 <img style="--card-initial-rotation: -6deg"
-                class="card-animation animation-delay-0 h-full border origin-top-right scale-90 rotate-[4deg] -translate-y-3 translate-x-4 border-gray-600/10 dark:border-gray-500/10 rounded-2xl shadow-xl shadow-black/5 " src="/pin.png" alt="pin frame sample">
+                    class="card-animation animation-delay-0 h-full border origin-top-right scale-90 rotate-[4deg] -translate-y-3 translate-x-5 border-gray-600/10 dark:border-gray-500/10 rounded-2xl shadow-xl shadow-black/5 " 
+                    src="/pin image 1.png" alt="pin frame sample">
                 <img 
-                class="card-animation animation-delay-50 h-full -rotate-[12deg] scale-90 origin-top-left border -translate-x-4 border-gray-600/10 dark:border-gray-500/10 rounded-2xl shadow-xl shadow-black/5 " src="/pin.png" alt="pin frame sample">
+                    class="card-animation animation-delay-50 h-full -rotate-[12deg] scale-90 origin-top-left border -translate-x-5 border-gray-600/10 dark:border-gray-500/10 rounded-2xl shadow-xl shadow-black/5 " 
+                    src="/pin image 2.png" alt="pin frame sample">
             </div>
             <div class="flex gap-2 border border-outline-variant border-dashed rounded-2xl p-2 pt-16 overflow-hidden w-full">
                 <div class="button-animation animation-delay-100">
@@ -108,7 +110,7 @@
         animation: pin-animation 750ms cubic-bezier(0.4, 0.885, 0.32, 1) forwards;
     }
     @keyframes pin-animation {
-        0% {scale: 3}
+        0% {scale: 3.15}
         70% {scale: 1.5}
         100% {scale: 1.85}
     }
