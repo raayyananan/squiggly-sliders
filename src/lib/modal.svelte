@@ -38,7 +38,7 @@
 </div>
 
 {#if modalVisible}
-    <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {modalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-30 bg-[rgba(253,249,236,1)] dark:bg-[rgba(20,20,12,.85)]"></div>
+    <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {modalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-30 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
     <div out:scale={{duration: 150, easing: cubicOut, start: 0.9}} 
     class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-108 z-30">
         <div class="ios-nav-in flex flex-col items-center gap-6 w-full h-full p-2 pt-4 bg-surface-container shadow-lg rounded-2xl">
