@@ -277,11 +277,17 @@
                     </Modal> -->
                     <Modal classes="items-center">
                         <button role="button" aria-label="button"
-                        class="global-theme-button relative button cursor-pointer flex-shrink-0 text-on-primary h-12 button-shadow-default px-5 rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
-                        focus-visible:scale-[1.02] active:scale-[0.97] primary-gradient-background">
-                            <div class="flex gap-1.5 items-center pr-2">
-                                <div class="text-lg material-symbols-rounded bold -translate-y-px">info</div>
-                                <div class="text-sm font-bold">About</div>
+                        class="global-theme-button relative button cursor-pointer flex-shrink-0 text-on-primary h-12 min-w-12 px-[15px] button-shadow-default rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
+                        focus-visible:scale-[1.02] active:scale-[0.97] primary-gradient-background group">
+                            <div class="flex items-center">
+                                <div class="text-sm font-bold transition-all duration-200 delay-0 md:group-hover:delay-100 easing-emphasized 
+                                            w-0 overflow-hidden group-hover:mr-1.5 group-hover:w-12">
+                                    <div class="">About</div>
+                                </div>
+                                <div class="text-lg material-symbols-rounded bold -translate-y-[0.5px] transition-all duration-200 delay-0 md:group-hover:delay-100 easing-emphasized
+                                            group-hover:scale-95">
+                                    info
+                                </div>
                             </div>
                         </button>
                     </Modal>
