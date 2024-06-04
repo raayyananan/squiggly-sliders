@@ -38,9 +38,9 @@
 </div>
 
 {#if modalVisible}
-    <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {modalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-10 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
+    <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {modalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-30 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
     <div out:scale={{duration: 150, easing: cubicOut, start: 0.9}} 
-    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-108 z-10">
+    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-108 z-30">
         <div class="ios-nav-in flex flex-col items-center gap-6 w-full h-full p-2 pt-4 bg-surface-container shadow-lg rounded-2xl">
             <div class="flex items-center justify-center relative">
                 <div class="rounded-full bg-primary w-3 h-3 items-center justify-center flex">
@@ -126,6 +126,10 @@
     .button-animation {
         animation: button-fall-animation 1000ms var(--bounce-easing) forwards;
         translate: 0 -7rem; 
+        @media (max-width: 650px) {
+            --button-initial-rotation: -20deg;
+            animation: button-fall-animation 500ms var(--md-sys-motion-easing-emphasized) forwards;
+        }
     }
     @keyframes button-fall-animation {
         0% {translate: 0 -7rem; transform-origin: bottom left; rotate: var(--button-initial-rotation);}
