@@ -35,7 +35,11 @@
 <div class="h-full flex {classes}" 
         on:click={() => {modalVisible = !modalVisible}} aria-label="button">
     <slot />
+    <div class="pointer-events-none h-0 w-0 overflow-hidden">
+        <img src="/image.png" alt="pin">
+    </div>
 </div>
+
 
 {#if modalVisible}
     <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {modalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-30 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
