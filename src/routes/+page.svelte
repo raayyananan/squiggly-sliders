@@ -238,7 +238,7 @@
 <div class="page-container w-full h-full flex flex-col md:flex-row overflow-hidden">
     
     <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pb-16 md:py-12">
-        <div class="fixed top-0 left-0 w-full pt-6 pb-0 px-7 z-20 flex items-center justify-between">
+        <div class="flex md:hidden fixed top-0 left-0 w-full pt-6 pb-0 px-7 z-20 items-center justify-between">
             <h1 class="text-sm font-bold z-10">Squiggly Sliders</h1>
             <Modal classes="z-10">
                 <button class="increment-button rounded-full h-6 w-6 active:scale-90 bg-surface-container-high duration-75 text-on-surface flex items-center justify-center">
