@@ -111,7 +111,19 @@
         0.66 20.6%, 0.765 24.6%, 0.845 30.4%, 0.883 35.1%, 0.916 40.6%, 0.942 47.2%,
         0.963 55%, 0.991 74.4%, 1
     );
-
+    --elastic-easing: cubic-bezier(0.4, -0.55, 0.265, 2);
+    --elastic-easing: linear(
+        0, 0.002, 0.009 1.1%, 0.038 2.2%, 0.155 4.8%, 0.309 7.1%, 0.779 13.5%,
+        1.001 17.3%, 1.08, 1.141, 1.185, 1.212 24.6%, 1.221, 1.224, 1.219 28.6%,
+        1.207 30.2%, 1.17 33.1%, 1.058 39.9%, 1.011 43.3%, 0.973 47.1%, 0.962,
+        0.954 51%, 0.95 53.9%, 0.954 57.1%, 0.996 69.9%, 1.009, 1.011 83.7%, 0.999
+    );
+    --bounce-easing: linear(
+        0, 0.004, 0.016, 0.035, 0.063, 0.098, 0.141 13.6%, 0.25, 0.391, 0.563, 0.765,
+        1, 0.891 40.9%, 0.848, 0.813, 0.785, 0.766, 0.754, 0.75, 0.754, 0.766, 0.785,
+        0.813, 0.848, 0.891 68.2%, 1 72.7%, 0.973, 0.953, 0.941, 0.938, 0.941, 0.953,
+        0.973, 1, 0.988, 0.984, 0.988, 1
+    );
 
     --slider-color-1: #616118;
     --slider-color-2: #3d6657;
@@ -248,6 +260,14 @@ button {
     touch-action: manipulation;
 }
 
+.scale-up {
+    animation: scale-up 750ms var(--elastic-easing) forwards;
+}
+@keyframes scale-up {
+    0% {scale: 0}
+    100% {scale: 1}
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -259,6 +279,7 @@ button {
 .easing-bounce-out {transition-timing-function: cubic-bezier(0.4, -0.55, 0.265, 2)}
 .easing-quint-out {transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);}
 .easing-bounce-out-light {transition-timing-function: cubic-bezier(0.4, 0, 0.265, 1.55)}
+.easing-elastic {transition-timing-function: var(--elastic-easing)}
 .no-transition-important {transition: none !important}
 
 .raleway {font-family: 'Raleway', sans-serif;}
@@ -271,6 +292,28 @@ button {
 }
 
 .duration-300 {transition-duration: 250ms;}
+
+.animation-delay-50 { animation-delay: 50ms !important; }
+.animation-delay-100 { animation-delay: 100ms !important; }
+.animation-delay-150 { animation-delay: 150ms !important; }
+.animation-delay-200 { animation-delay: 200ms !important; }
+.animation-delay-250 { animation-delay: 250ms !important; }
+.animation-delay-300 { animation-delay: 300ms !important; }
+.animation-delay-350 { animation-delay: 350ms !important; }
+.animation-delay-400 { animation-delay: 400ms !important; }
+.animation-delay-450 { animation-delay: 450ms !important; }
+.animation-delay-500 { animation-delay: 500ms !important; }
+.animation-delay-600 { animation-delay: 600ms !important; }
+.animation-delay-700 { animation-delay: 700ms !important; }
+.animation-delay-800 { animation-delay: 800ms !important; }
+.animation-delay-900 { animation-delay: 900ms !important; }
+.animation-delay-1000 { animation-delay: 1000ms !important; } /* Or 1s */
+.animation-delay-1100 { animation-delay: 1100ms !important; }
+.animation-delay-1200 { animation-delay: 1200ms !important; }
+.animation-delay-1300 { animation-delay: 1300ms !important; }
+.animation-delay-1400 { animation-delay: 1400ms !important; }
+.animation-delay-1500 { animation-delay: 1500ms !important; } /* Or 1.5s */
+
 
 // button, .flex-col {
 //     border: 1px dashed rgba(188, 131, 0, 0.5)

@@ -13,7 +13,7 @@
 
 {#if !href}
 <button role="button" target={target} on:click={() => dispatch('click')} aria-label="button"
-    class="relative button cursor-pointer flex-shrink-0 text-on-primary {big ? square ? 'h-8 w-8' : 'h-9 pl-4 pr-5' : square ? 'h-7 w-7' : 'h-7 px-3'} rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
+    class="relative button cursor-pointer flex-shrink-0 text-on-primary {big ? square ? 'h-9 w-9' : 'h-9 pl-4 pr-5' : square ? 'h-7 w-7' : 'h-7 px-3'} rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
     focus-visible:scale-[1.02] active:scale-[0.97]
     {active ? 'font-semibold' : 'font-bold inactive'} {classes}">
     <div class="relative z-10">
@@ -22,7 +22,7 @@
 </button>
 {:else}
 <a href="{href}" target={target} on:click={() => dispatch('click')} 
-    class="relative button cursor-pointer flex-shrink-0 text-on-primary {big ? square ? 'h-8 w-8' : 'h-9 pl-4 pr-5' : square ? 'h-7 w-7' : 'h-7 px-3'} rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
+    class="relative button cursor-pointer flex-shrink-0 text-on-primary {big ? square ? 'h-9 w-9' : 'h-9 pl-4 pr-5' : square ? 'h-7 w-7' : 'h-7 px-3'} rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
     focus-visible:scale-[1.02] active:scale-[0.97]
     {active ? 'font-semibold' : 'font-bold inactive'} {classes}">
     <div class="relative z-10">

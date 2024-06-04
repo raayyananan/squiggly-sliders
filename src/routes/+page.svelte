@@ -8,6 +8,7 @@
     import { Toaster, toast } from 'svelte-sonner';
     import ColorPicker from 'svelte-awesome-color-picker';
     import { onMount } from 'svelte';
+    import Modal from '../lib/modal.svelte';
 
     let sliders = [
     ];
@@ -236,7 +237,7 @@
     <Toaster position="top-left" />
 </div>
 
-<div class="w-full h-full flex flex-col md:flex-row overflow-hidden">
+<div class="page-container w-full h-full flex flex-col md:flex-row overflow-hidden">
     
     <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pt-6 pb-16 md:py-12">
         <!-- <ColorPicker on:input={(e) => {inputColor(e, 'active')}} /> on:input={(e) => {inputColor(e, 'active')}} -->
@@ -263,23 +264,27 @@
         <div class="w-full md:h-full rounded-xl gap-4 flex-col grid items-end justify-stretch md:flex transition-all duration-300 easing-emphasized
         {controlCentreDown ? 'grid-rows-[0px]' : 'grid-rows-1'} md:grid-rows-1">
 
-            <div class="hidden md:flex w-full card-background pl-4 md:pl-6 shadow shadow-black/15 rounded-2xl flex-col gap-4">
+            <div class="hidden md:flex w-full card-background pl-4 md:pl-6 pr-2 shadow shadow-black/15 rounded-2xl flex-col gap-4">
                 <div class="h-16 flex items-center justify-between">
                     <h2 class="font-extrabold">Squiggly Sliders</h2>
-                    <button class="global-theme-button button-shadow-left flex items-center w-36 justify-center h-full primary-gradient-background text-on-primary rounded-r-2xl group md:active:brightness-95">
-                        <div class="flex items-center gap-2 group-active:scale-[0.95] transition-transform duration-75">
-                            <div class="text-sm font-bold">About</div>
-                            <div class="text-lg material-symbols-rounded bold -translate-y-px origin-bottom-right">keyboard_arrow_down</div>
+                    <!-- <Modal classes="justify-end">
+                        <div class="global-theme-button button-shadow-left flex items-center w-36 justify-center h-full primary-gradient-background text-on-primary rounded-r-2xl group md:active:brightness-95">
+                            <div class="flex items-center gap-2 group-active:scale-[0.95] transition-transform duration-75">
+                                <div class="text-sm font-bold">About</div>
+                                <div class="text-lg material-symbols-rounded bold -translate-y-px origin-bottom-right">keyboard_arrow_down</div>
+                            </div>
                         </div>
-                    </button>
-                    <!-- <button role="button" aria-label="button"
-                    class="global-theme-button relative button cursor-pointer flex-shrink-0 text-on-primary h-10 button-shadow-default px-5 rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
-                    focus-visible:scale-[1.02] active:scale-[0.97] primary-gradient-background">
-                        <div class="flex gap-1.5 items-center">
-                            <div class="text-lg material-symbols-rounded bold -translate-y-px">colors</div>
-                            <div class="text-sm font-bold">#808000</div>
-                        </div>
-                    </button> -->
+                    </Modal> -->
+                    <Modal classes="items-center">
+                        <button role="button" aria-label="button"
+                        class="global-theme-button relative button cursor-pointer flex-shrink-0 text-on-primary h-12 button-shadow-default px-5 rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
+                        focus-visible:scale-[1.02] active:scale-[0.97] primary-gradient-background">
+                            <div class="flex gap-1.5 items-center pr-2">
+                                <div class="text-lg material-symbols-rounded bold -translate-y-px">info</div>
+                                <div class="text-sm font-bold">About</div>
+                            </div>
+                        </button>
+                    </Modal>
                 </div>
             </div>
 
