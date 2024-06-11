@@ -250,7 +250,7 @@
             <div class="absolute -top-px left-0 w-full h-[200%] pointer-events-none lng"></div>
             <div class="absolute -top-px left-0 w-full h-[200%] pointer-events-none lng"></div>
         </div>
-        <div class="w-full h-12 flex-shrink-0"></div>
+        <div class="block md:hidden w-full h-12 flex-shrink-0"></div>
         {#each sliders as slider (slider.id)}
         <div in:slide={{duration: 250, easing: backOut}} out:fadeSlide={{duration: 150}} class="w-full md:w-116 h-14 flex items-center justify-between md:justify-center lg:justify-between px-6 md:px-2 gap-4 group flex-shrink-0 {slider.id > 0 && 'mt-3 md:mt-4'}">
                 <button on:click={() => {copySliderProperties(slider.id)}} class="opacity-1 lg:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 increment-button rounded-full h-8 w-8 md:hover:bg-surface-container text-outline lg:text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
