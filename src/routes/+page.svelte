@@ -237,7 +237,7 @@
 <Toaster bind:position={toasterPosition} />
 <div class="page-container w-full h-full flex flex-col md:flex-row overflow-hidden">
     
-    <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pb-16 md:py-12">
+    <div class="sliders-container flex-auto h-screen flex flex-col items-center md:justify-center overflow-y-scroll pb-16 md:pb-0 md:py-0">
         <div class="flex md:hidden fixed top-0 left-0 w-full pt-6 pb-0 px-7 z-20 items-center justify-between">
             <h1 class="text-sm font-bold z-10">Squiggly Sliders</h1>
             <Modal classes="z-10">
