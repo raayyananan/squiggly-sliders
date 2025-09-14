@@ -9,6 +9,16 @@
     import ColorPicker from 'svelte-awesome-color-picker';
     import { onMount } from 'svelte';
     import Modal from '../lib/modal.svelte';
+    import { generateSnippet } from '$lib/generateSnippet.js';
+    
+    // Import highlight.js
+    import hljs from 'highlight.js/lib/core';
+    import javascript from 'highlight.js/lib/languages/javascript';
+    import xml from 'highlight.js/lib/languages/xml';
+    
+    // Register languages
+    hljs.registerLanguage('javascript', javascript);
+    hljs.registerLanguage('xml', xml);
 
     let sliders = [
     ];
@@ -28,12 +38,56 @@
     let controlCentreDown = false;
     let toasterPosition = 'bottom-left';
 
+    const importPath = 'squiggly-sliders';
+    const snippetValue = 6;
+    const minVal = 0;
+    const maxVal = 10;
+    const stepVal = 1;
+
+    $: currentSnippet = generateSnippet({
+        activeColor,
+        passiveColor,
+        activeAmplitude,
+        passiveAmplitude,
+        activeWavelength,
+        passiveWavelength,
+        speedFactor,
+        value: snippetValue,
+        min: minVal,
+        max: maxVal,
+        step: stepVal,
+    }, importPath);
+
     onMount(() => {
         controlCentreDown = false;
         if (window.innerWidth <= 648) {
             toasterPosition = 'top-left';
         }
     })
+
+
+    async function copySnippet() {
+        try {
+            await navigator.clipboard.writeText(currentSnippet);
+            toast.success('Snippet copied to clipboard!', {
+                classes: {
+                    toast: "raleway flex items-center rounded-xl h-12 md:easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
+                }
+            });
+        } catch (err) {
+            toast.error('Failed to copy snippet');
+        }
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function highlightSvelte(code) {
+        if (!code) return '';
+        // Use highlight.js to highlight the code
+        const highlighted = hljs.highlight(code, { language: 'xml' }).value;
+        return highlighted;
+    }
 
     let idCount = 0;
     const addSlider = (
@@ -516,6 +570,13 @@
                     </div>
                 </div>
 
+                <div class="relative text-surface">
+                    <button on:click={copySnippet} class="absolute top-2 right-2 increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
+                        <div class="material-symbols-rounded text-base">content_copy</div>
+                    </button>
+                    <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSvelte(currentSnippet)}</code></pre>
+                </div>
+
                 <div class="flex w-full justify-end">
                     <button role="button" aria-label="button" on:click={() => {
                         addSlider(
@@ -636,6 +697,12 @@
     /* .inner-shadow {
         box-shadow: inset 0 3px 4px 0 rgba(0,0,0,0.05);
     } */
+
+    .tok-key{color:#bb9af7}
+    .tok-tag{color:#7aa2f7}
+    .tok-attr{color:#e0af68}
+    .tok-string{color:#9ece6a}
+    .tok-number{color:#ff9e64}
 </style>
 
 <!-- <input type="text" class="w-full h-12 border border-surface-container-high placeholder:text-outline-variant
