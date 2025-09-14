@@ -41,10 +41,6 @@ export function generateSnippet(cfg, importPath = 'squiggly-sliders') {
   const passiveHex = resolveToHex(passiveColor, '#1c1c14');
 
   const lines = [];
-  lines.push('<script>');
-  lines.push(`  import SquigglySlider from '${importPath}';`);
-  lines.push('</script>');
-  lines.push('');
   lines.push('<SquigglySlider');
   lines.push(`  min={${min}}`);
   lines.push(`  max={${max}}`);

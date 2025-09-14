@@ -570,11 +570,11 @@
                     </div>
                 </div>
 
-                <div class="relative rounded-xl border border-white/10 bg-[#0b0d0f] text-[#e6edf3]">
+                <div class="relative text-surface">
                     <button on:click={copySnippet} class="absolute top-2 right-2 increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
                         <div class="material-symbols-rounded text-base">content_copy</div>
                     </button>
-                    <pre class="max-h-[40vh] overflow-auto p-3 md:p-4 text-[13px] leading-5 font-mono"><code class="hljs">{@html highlightSvelte(currentSnippet)}</code></pre>
+                    <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSvelte(currentSnippet)}</code></pre>
                 </div>
 
                 <div class="flex w-full justify-end">
