@@ -48,7 +48,7 @@
 
     // Full-duplex code block state
     let codeText = '';
-    let codeEditorOpen = false;
+    
     let codeProps = {};
 
     function highlightSvelte(code) {
@@ -64,6 +64,11 @@
     function formatAttrValue(val) {
         if (typeof val === 'number' || typeof val === 'boolean') return `{${val}}`;
         return `{'${escapeSingleQuotes(val)}'}`;
+    }
+
+    function toColorStyle(v) {
+        if (!v) return '';
+        return (typeof v === 'string' && v.startsWith('--')) ? `var(${v})` : v;
     }
 
     function parsePropsFromCode(text) {
@@ -453,7 +458,7 @@
                            {activePickerOpen ? 
                                 'w-[calc(100%_+_80px)] translate-x-5 md:translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface dark:text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-l-2xl easing-bounce-out-light' : 
                                 'w-full h-full rounded-l-2xl easing-emphasized z-0'}"
-                            style="{activePickerOpen ? '' : `background-color: var(${activeColor})`}">
+                            style="{activePickerOpen ? '' : `background-color: ${toColorStyle(activeColor)}`}">
 
                         <div class="absolute top-0 left-0 w-full h-full bg-light-gradient rounded-l-xl {activePickerOpen && 'opacity-0'}"></div>
                             
@@ -493,7 +498,7 @@
                            {passivePickerOpen ? 
                                 'w-[calc(100%_+_80px)] -translate-x-5 md:-translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface dark:text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-r-2xl easing-bounce-out-light' : 
                                 'w-full h-full rounded-r-2xl easing-emphasized'}"
-                            style="{passivePickerOpen ? '' : `background-color: var(${passiveColor}); color: var(${passiveColor}-text);`}">
+                            style="{passivePickerOpen ? '' : `background-color: ${toColorStyle(passiveColor)}${(typeof passiveColor === 'string' && passiveColor.startsWith('--')) ? '; color: var(' + passiveColor + '-text)' : ''}`}">
 
                         <div class="absolute top-0 left-0 w-full h-full bg-light-gradient rounded-l-xl {passivePickerOpen && 'opacity-0'}"></div>
                             
@@ -634,20 +639,13 @@
 
                 <div class="relative text-surface">
                     <div class="absolute top-2 right-2 flex gap-2">
-                        <button on:click={() => { codeEditorOpen = !codeEditorOpen; }} class="increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Edit code">
-                            <div class="material-symbols-rounded text-base">{codeEditorOpen ? 'visibility' : 'edit'}</div>
-                        </button>
                         <button on:click={copySnippet} class="increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
                             <div class="material-symbols-rounded text-base">content_copy</div>
                         </button>
                     </div>
-                    {#if codeEditorOpen}
-                        <textarea class="w-full rounded-xl p-3 font-mono text-[13px] leading-5 bg-surface-container-low border border-outline-variant outline-none focus-visible:border-primary min-h-40"
-                                  bind:value={codeText}
-                                  on:input={(e) => parseAndApplyCode(e.target.value)} />
-                    {:else}
-                        <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSvelte(codeText)}</code></pre>
-                    {/if}
+                    <textarea class="w-full rounded-xl p-3 font-mono text-[13px] leading-5 bg-inverse-surface text-inverse-on-surface border border-outline-variant outline-none focus-visible:border-primary min-h-40"
+                              bind:value={codeText}
+                              on:input={(e) => parseAndApplyCode(e.target.value)} />
                 </div>
 
                 <div class="flex w-full justify-end">
