@@ -1,18 +1,18 @@
 const template = document.createElement('template');
 template.innerHTML = `
-<style>
-  :host { display: block; }
-  .container { position: relative; width: 100%; max-width: 100%; min-width: 0; }
-  input[type="range"] { position: absolute; inset: 0; height: 100%; width: 100%; background: transparent; -webkit-appearance: none; appearance: none; border-radius: 10px; }
-  input[type="range"]::-webkit-slider-thumb { background: transparent; opacity: 0; border: none; }
-  input[type="range"]::-moz-range-thumb { background: transparent; opacity: 0; border: none; }
-  input[type="range"]::-ms-thumb { background: transparent; opacity: 0; border: none; }
-  input:focus-visible { outline: 1px solid currentColor; }
-</style>
-<div class="container">
-  <canvas aria-hidden="true"></canvas>
-  <input type="range" />
-</div>
+  <style>
+    :host { display: block; }
+    .container { position: relative; width: 100%; max-width: 100%; min-width: 0; }
+    input[type="range"] { position: absolute; inset: 0; height: 100%; width: 100%; background: transparent; -webkit-appearance: none; appearance: none; border-radius: 10px; }
+    input[type="range"]::-webkit-slider-thumb { background: transparent; opacity: 0; border: none; }
+    input[type="range"]::-moz-range-thumb { background: transparent; opacity: 0; border: none; }
+    input[type="range"]::-ms-thumb { background: transparent; opacity: 0; border: none; }
+    input:focus-visible { outline: 1px solid currentColor; }
+  </style>
+  <div class="container">
+    <canvas aria-hidden="true"></canvas>
+    <input type="range" />
+  </div>
 `;
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -33,7 +33,7 @@ function resolveTokenColor(el, token) {
   return token;
 }
 
-export default class SquigglySlider extends HTMLElement {
+class SquigglySliderElement extends HTMLElement {
   static get observedAttributes() {
     return [
       'title', 'min', 'max', 'step', 'value',
@@ -45,7 +45,6 @@ export default class SquigglySlider extends HTMLElement {
 
   constructor() {
     super();
-
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
@@ -111,9 +110,9 @@ export default class SquigglySlider extends HTMLElement {
     const raf = () => {
       this.animationRequest = requestAnimationFrame(raf);
       if (!this.rendering) return;
-
       const now = Date.now() - this.startingTime;
       const ctx = this.ctx;
+
       ctx.clearRect(0, 0, ctx.width, ctx.height);
 
       ctx.beginPath();
@@ -255,6 +254,7 @@ export default class SquigglySlider extends HTMLElement {
     const duration = this.animationDuration;
     const startValue = this.animatedLength;
     const endValue = 0;
+    const endRadius = 0;
 
     const step = () => {
       const elapsed = Date.now() - startTime;
@@ -265,8 +265,8 @@ export default class SquigglySlider extends HTMLElement {
         this.circleRadius = this.actualCircleRadius - this.actualCircleRadius * (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
         requestAnimationFrame(step);
       } else {
-        this.animatedLength = 0;
-        this.circleRadius = 0;
+        this.animatedLength = endValue;
+        this.circleRadius = endRadius;
         this.pause();
       }
     };
@@ -324,4 +324,9 @@ export default class SquigglySlider extends HTMLElement {
   }
 }
 
-window.customElements.define('squiggly-slider', SquigglySlider);
+const tag = 'squiggly-slider';
+if (!customElements.get(tag)) {
+  customElements.define(tag, SquigglySliderElement);
+}
+
+export default SquigglySliderElement;
