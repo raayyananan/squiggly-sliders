@@ -756,18 +756,34 @@
         72% {scale: 0.98;}
         100% {opacity: 1; scale: 1; filter: blur(0px);}
     }
+    .pin {
+        filter: drop-shadow(-1px 2px 3px rgba(0,0,0,0.25));
+        animation: pin-animation 750ms cubic-bezier(0.4, 0.885, 0.32, 1) forwards;
+    }
+    @keyframes pin-animation {
+        0% {scale: 3.15}
+        70% {scale: 1.4}
+        100% {scale: 1.85}
+    }
 </style>
 
 
 {#if instructionsModalVisible}
     <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {instructionsModalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-30 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
-    <div out:scale={{duration: 150, easing: cubicOut, start: 0.9}} class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-108 z-30">
+    <div out:scale={{duration: 150, easing: cubicOut, start: 0.9}} class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-[616px] z-30">
         <div class="ios-nav-in flex flex-col items-center gap-6 w-full h-full p-2 pt-4 bg-surface-container shadow-lg rounded-2xl">
+            <div class="flex items-center justify-center relative">
+                <div class="rounded-full bg-primary w-3 h-3 items-center justify-center flex">
+                    <div class="rounded-full w-3 h-3 items-end justify-center flex">
+                        <img class="pin w-5 h-5 flex-shrink-0 max-w-none origin-bottom rotate-[30deg] -translate-x-px -translate-y-0.5" src="/image.png" alt="ping">
+                    </div>
+                </div>
+            </div>
             <button on:click={() => {instructionsModalVisible = false}} style="scale: 0;" 
                 class="scale-up animation-delay-50 easing-elastic absolute top-0 right-4 -mt-4 rounded-full button-shadow-default1 border border-dashed border-outline-variant dark:border-outline-variant h-8 w-8 bg-surface-container-high text-outline lg:text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
                 <div class="material-symbols-rounded text-xl font-semibold">close</div>
             </button>
-            <h1 class="text-2xl font-bold flex-shrink-0 mt-2">Framework Instructions</h1>
+            <h1 class="text-2xl font-bold flex-shrink-0 mt-2">Instructions</h1>
             <div class="px-[10%] flex flex-col gap-4 text-center w-full">
                 {#if framework === 'svelte'}
                     <div class="text-left">
@@ -802,7 +818,7 @@
                     </div>
                 {/if}
                 <div class="text-left">
-                    <pre class="bg-surface-container-highest p-3 rounded-lg text-sm"><code>{@html highlightSnippet(currentSnippet)}</code></pre>
+                    <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSnippet(currentSnippet)}</code></pre>
                 </div>
             </div>
         </div>
