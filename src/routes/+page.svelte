@@ -29,8 +29,6 @@
     let controlCentreDown = false;
     let toasterPosition = 'bottom-left';
 
-    let includeThemeVars = false;
-    let codeOpen = true;
     const importPath = 'squiggly-sliders';
     const snippetValue = 6;
     const minVal = 0;
@@ -49,20 +47,15 @@
         min: minVal,
         max: maxVal,
         step: stepVal,
-    }, importPath, includeThemeVars);
+    }, importPath);
 
     onMount(() => {
         controlCentreDown = false;
         if (window.innerWidth <= 648) {
             toasterPosition = 'top-left';
         }
-        try {
-            const saved = localStorage.getItem('sq_inc_theme_vars');
-            includeThemeVars = saved ? saved === '1' : false;
-        } catch (e) {}
     })
 
-    $: (() => { try { localStorage.setItem('sq_inc_theme_vars', includeThemeVars ? '1' : '0'); } catch (e) {} })();
 
     async function copySnippet() {
         try {
@@ -75,6 +68,19 @@
         } catch (err) {
             toast.error('Failed to copy snippet');
         }
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function highlightSvelte(code) {
+        let html = escapeHtml(code ?? '');
+        html = html.replace(/('[^']*'|\"[^\"]*\")/g, '<span class="tok-string">$1</span>');
+        html = html.replace(/(&lt;\/?)([A-Za-z][\w:-]*)/g, '$1<span class="tok-tag">$2</span>');
+        html = html.replace(/(\s)([a-zA-Z_:][\w:.-]*)(=)/g, '$1<span class="tok-attr">$2</span>$3');
+        html = html.replace(/\b(import|from|const|let|return|export|as)\b/g, '<span class="tok-key">$1</span>');
+        html = html.replace(/([^\w#])([0-9]+(?:\.[0-9]+)?)/g, '$1<span class="tok-number">$2</span>');
+        return html;
     }
 
     let idCount = 0;
@@ -558,21 +564,11 @@
                     </div>
                 </div>
 
-                <div class="hidden md:flex items-center justify-between">
-                    <h2 class="font-extrabold">Code</h2>
-                    <div class="flex items-center gap-2">
-                        <label class="flex items-center gap-2 text-sm text-on-surface">
-                            <input type="checkbox" bind:checked={includeThemeVars}>
-                            <span>Include optional theme variable setter</span>
-                        </label>
-                        <button on:click={copySnippet} class="increment-button rounded-full h-7 px-3 bg-surface-container-highest text-on-surface flex items-center justify-center hover:brightness-95 active:brightness-95 active:scale-95 transition-all">
-                            <div class="material-symbols-rounded text-sm -translate-y-[1px]">content_copy</div>
-                            <div class="text-xs font-bold ml-1">Copy</div>
-                        </button>
-                    </div>
-                </div>
-                <div class="rounded-xl border border-outline-variant bg-surface-container-highest/50 p-3 md:p-4">
-                    <pre class="overflow-x-auto text-[13px] leading-5"><code>{currentSnippet}</code></pre>
+                <div class="relative rounded-xl border border-white/10 bg-[#0b0d0f] text-[#e6edf3]">
+                    <button on:click={copySnippet} class="absolute top-2 right-2 increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
+                        <div class="material-symbols-rounded text-base">content_copy</div>
+                    </button>
+                    <pre class="max-h-[40vh] overflow-auto p-3 md:p-4 text-[13px] leading-5 font-mono"><code>{@html highlightSvelte(currentSnippet)}</code></pre>
                 </div>
 
                 <div class="flex w-full justify-end">
@@ -695,6 +691,12 @@
     /* .inner-shadow {
         box-shadow: inset 0 3px 4px 0 rgba(0,0,0,0.05);
     } */
+
+    .tok-key{color:#bb9af7}
+    .tok-tag{color:#7aa2f7}
+    .tok-attr{color:#e0af68}
+    .tok-string{color:#9ece6a}
+    .tok-number{color:#ff9e64}
 </style>
 
 <!-- <input type="text" class="w-full h-12 border border-surface-container-high placeholder:text-outline-variant
