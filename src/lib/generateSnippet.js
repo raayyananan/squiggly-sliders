@@ -110,7 +110,8 @@ function generateWebComponentSnippet(cfg) {
     value,
     min = 0,
     max = 10,
-    step = 1
+    step = 1,
+    disabled = false,
   } = cfg;
 
   const activeHex = resolveToHex(activeColor, '#616118');
@@ -128,6 +129,7 @@ function generateWebComponentSnippet(cfg) {
   attrs.push(`passive-wavelength="${passiveWavelength}"`);
   attrs.push(`speed-factor="${speedFactor}"`);
   if (step !== 1) attrs.push(`step="${step}"`);
+  if (disabled) attrs.push('disabled');
 
   return `<squiggly-slider ${attrs.join(' ')}></squiggly-slider>`;
 }

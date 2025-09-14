@@ -1,7 +1,7 @@
 <script>
     import SquigglySlider from '$lib/squigglySlider.svelte';
     import Button from '../lib/button.svelte';
-    import { fade, scale } from 'svelte/transition';
+    import { fade, slide, scale } from 'svelte/transition';
     import { translateIn, translateOut, fadeSlide } from '$lib/translateIn.js';
     import { backOut, cubicOut, expoOut } from 'svelte/easing';
     import { writable } from 'svelte/store';
@@ -15,12 +15,10 @@
     import hljs from 'highlight.js/lib/core';
     import javascript from 'highlight.js/lib/languages/javascript';
     import xml from 'highlight.js/lib/languages/xml';
-    import jsx from 'highlight.js/lib/languages/jsx';
     
     // Register languages
     hljs.registerLanguage('javascript', javascript);
     hljs.registerLanguage('xml', xml);
-    hljs.registerLanguage('jsx', jsx.default || jsx);
 
     let sliders = [
     ];
@@ -103,15 +101,19 @@
     }
     function highlightSnippet(code) {
         if (!code) return '';
-        // Use highlight.js to highlight the code based on framework
         let language = 'xml';
         if (framework === 'react') {
-            language = 'jsx';
+            language = hljs.getLanguage && hljs.getLanguage('jsx') ? 'jsx' : 'javascript';
         } else if (framework === 'javascript') {
             language = 'xml';
         }
-        const highlighted = hljs.highlight(code, { language }).value;
-        return highlighted;
+        try {
+            return hljs.highlight(code, { language }).value;
+        } catch (e) {
+            try { return hljs.highlight(code, { language: 'javascript' }).value; } catch {
+                return hljs.highlight(code, { language: 'xml' }).value;
+            }
+        }
     }
 
     let idCount = 0;
@@ -581,24 +583,6 @@
 
                 <div class="hidden md:flex items-center justify-between">
                     <h2 class="font-extrabold">Preview</h2>
-                    <div class="flex items-center gap-4">
-                        <button 
-                            on:click={() => {instructionsModalVisible = true}} 
-                            class="text-on-surface text-sm font-medium transition-colors duration-200 hover:text-on-surface-variant focus-visible:text-on-surface-variant"
-                            aria-label="Instructions"
-                        >
-                            Instructions
-                        </button>
-                        <select 
-                            bind:value={framework}
-                            class="bg-surface-container-highest text-on-surface text-sm rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
-                            aria-label="Select framework for code snippet"
-                        >
-                            <option value="svelte">Svelte</option>
-                            <option value="react">React</option>
-                            <option value="javascript">JavaScript</option>
-                        </select>
-                    </div>
                 </div>
 
                 <div class="flex-auto flex flex-col items-center justify-center relative py-4">
@@ -611,6 +595,25 @@
                     <div class="w-80">
                         <SquigglySlider value={6} active={activeColor} passive={passiveColor} activeAmplitude={activeAmplitude} passiveAmplitude={passiveAmplitude} activeWavelength={activeWavelength} passiveWavelength={passiveWavelength} speedFactor={speedFactor} />
                     </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-2 pr-2">
+                    <button 
+                        on:click={() => {instructionsModalVisible = true}} 
+                        class="text-on-surface text-sm font-medium transition-colors duration-200 hover:text-on-surface-variant focus-visible:text-on-surface-variant"
+                        aria-label="Instructions"
+                    >
+                        Instructions
+                    </button>
+                    <select 
+                        bind:value={framework}
+                        class="bg-surface-container-highest text-on-surface text-sm rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
+                        aria-label="Select framework for code snippet"
+                    >
+                        <option value="svelte">Svelte</option>
+                        <option value="react">React</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
                 </div>
 
                 <div class="relative text-surface">
