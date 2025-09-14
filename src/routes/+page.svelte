@@ -1,7 +1,7 @@
 <script>
     import SquigglySlider from '$lib/squigglySlider.svelte';
     import Button from '../lib/button.svelte';
-    import { fade, slide } from 'svelte/transition';
+    import { fade, slide, scale } from 'svelte/transition';
     import { translateIn, translateOut, fadeSlide } from '$lib/translateIn.js';
     import { backOut, cubicOut, expoOut } from 'svelte/easing';
     import { writable } from 'svelte/store';
@@ -43,6 +43,23 @@
     const minVal = 0;
     const maxVal = 10;
     const stepVal = 1;
+    
+    // Framework selector
+    let framework = 'svelte'; // 'svelte' | 'react' | 'javascript'
+    let instructionsModalVisible = false;
+    
+    // Load framework preference from localStorage
+    if (typeof window !== 'undefined' && window.localStorage) {
+        const savedFramework = localStorage.getItem('squiggly-sliders-framework');
+        if (savedFramework && ['svelte', 'react', 'javascript'].includes(savedFramework)) {
+            framework = savedFramework;
+        }
+    }
+    
+    // Save framework preference to localStorage when it changes
+    $: if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('squiggly-sliders-framework', framework);
+    }
 
     $: currentSnippet = generateSnippet({
         activeColor,
@@ -56,7 +73,7 @@
         min: minVal,
         max: maxVal,
         step: stepVal,
-    }, importPath);
+    }, importPath, framework);
 
     onMount(() => {
         controlCentreDown = false;
@@ -82,11 +99,21 @@
     function escapeHtml(s) {
         return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
-    function highlightSvelte(code) {
+    function highlightSnippet(code) {
         if (!code) return '';
-        // Use highlight.js to highlight the code
-        const highlighted = hljs.highlight(code, { language: 'xml' }).value;
-        return highlighted;
+        let language = 'xml';
+        if (framework === 'react') {
+            language = hljs.getLanguage && hljs.getLanguage('jsx') ? 'jsx' : 'javascript';
+        } else if (framework === 'javascript') {
+            language = 'xml';
+        }
+        try {
+            return hljs.highlight(code, { language }).value;
+        } catch (e) {
+            try { return hljs.highlight(code, { language: 'javascript' }).value; } catch {
+                return hljs.highlight(code, { language: 'xml' }).value;
+            }
+        }
     }
 
     let idCount = 0;
@@ -570,11 +597,30 @@
                     </div>
                 </div>
 
+                <div class="flex items-center justify-end gap-2 pr-2">
+                    <button 
+                        on:click={() => {instructionsModalVisible = true}} 
+                        class="text-on-surface text-sm font-medium transition-colors duration-200 hover:text-on-surface-variant focus-visible:text-on-surface-variant"
+                        aria-label="Instructions"
+                    >
+                        Instructions
+                    </button>
+                    <select 
+                        bind:value={framework}
+                        class="bg-surface-container-highest text-on-surface text-sm rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
+                        aria-label="Select framework for code snippet"
+                    >
+                        <option value="svelte">Svelte</option>
+                        <option value="react">React</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                </div>
+
                 <div class="relative text-surface">
                     <button on:click={copySnippet} class="absolute top-2 right-2 increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
                         <div class="material-symbols-rounded text-base">content_copy</div>
                     </button>
-                    <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSvelte(currentSnippet)}</code></pre>
+                    <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSnippet(currentSnippet)}</code></pre>
                 </div>
 
                 <div class="flex w-full justify-end">
@@ -703,9 +749,78 @@
     .tok-attr{color:#e0af68}
     .tok-string{color:#9ece6a}
     .tok-number{color:#ff9e64}
+
+    .ios-nav-in { animation: ios-nav-in 750ms cubic-bezier(0, 0.885, 0.32, 1); animation-delay: inherit; }
+    @keyframes ios-nav-in {
+        0% {opacity: 0; scale: 1.25; filter: blur(8px); translate: 0 25px;}
+        72% {scale: 0.98;}
+        100% {opacity: 1; scale: 1; filter: blur(0px);}
+    }
+    .pin {
+        filter: drop-shadow(-1px 2px 3px rgba(0,0,0,0.25));
+        animation: pin-animation 750ms cubic-bezier(0.4, 0.885, 0.32, 1) forwards;
+    }
+    @keyframes pin-animation {
+        0% {scale: 3.15}
+        70% {scale: 1.4}
+        100% {scale: 1.85}
+    }
 </style>
 
-<!-- <input type="text" class="w-full h-12 border border-surface-container-high placeholder:text-outline-variant
-text-sm rounded-lg px-2 bg-surface-container-low font-semibold placeholder:transition-transform overflow-visible placeholder:origin-top-left focus-visible:pt-2 transition-all
-focus-visible:outline-primary focus-visible:placeholder:-translate-y-4 focus-visible:placeholder:scale-75 focus-visible:placeholder:text-primary
-" value="" placeholder="Active Amplitude (6)" /> -->
+
+{#if instructionsModalVisible}
+    <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {instructionsModalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-30 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
+    <div out:scale={{duration: 150, easing: cubicOut, start: 0.9}} class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-[616px] z-30">
+        <div class="ios-nav-in flex flex-col items-center gap-6 w-full h-full p-2 pt-4 bg-surface-container shadow-lg rounded-2xl">
+            <div class="flex items-center justify-center relative">
+                <div class="rounded-full bg-primary w-3 h-3 items-center justify-center flex">
+                    <div class="rounded-full w-3 h-3 items-end justify-center flex">
+                        <img class="pin w-5 h-5 flex-shrink-0 max-w-none origin-bottom rotate-[30deg] -translate-x-px -translate-y-0.5" src="/image.png" alt="ping">
+                    </div>
+                </div>
+            </div>
+            <button on:click={() => {instructionsModalVisible = false}} style="scale: 0;" 
+                class="scale-up animation-delay-50 easing-elastic absolute top-0 right-4 -mt-4 rounded-full button-shadow-default1 border border-dashed border-outline-variant dark:border-outline-variant h-8 w-8 bg-surface-container-high text-outline lg:text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
+                <div class="material-symbols-rounded text-xl font-semibold">close</div>
+            </button>
+            <h1 class="text-2xl font-bold flex-shrink-0 mt-2">Instructions</h1>
+            <div class="px-[10%] flex flex-col gap-4 text-center w-full">
+                {#if framework === 'svelte'}
+                    <div class="text-left">
+                        <h2 class="font-bold text-lg mb-2">Svelte Usage</h2>
+                        <p class="text-sm mb-3">Install the package:</p>
+                        <pre class="bg-surface-container-highest p-3 rounded-lg text-sm mb-3"><code>npm i squiggly-sliders</code></pre>
+                        <p class="text-sm mb-3">Import the component:</p>
+                        <pre class="bg-surface-container-highest p-3 rounded-lg text-sm mb-3"><code>import SquigglySlider from 'squiggly-sliders'</code></pre>
+                        <p class="text-sm">Use the component:</p>
+                    </div>
+                {:else if framework === 'react'}
+                    <div class="text-left">
+                        <h2 class="font-bold text-lg mb-2">React Usage</h2>
+                        <p class="text-sm mb-3">The React component can be found at:</p>
+                        <pre class="bg-surface-container-highest p-3 rounded-lg text-sm mb-3"><code>src/lib/react/SquigglySlider.jsx</code></pre>
+                        <p class="text-xs mb-1"><a href="https://github.com/raayyananan/squiggly-sliders/blob/main/src/lib/react/SquigglySlider.jsx" target="_blank" class="text-primary hover:underline">View on GitHub →</a></p>
+                        <p class="text-sm mb-3">Copy this file into your project and import it locally:</p>
+                        <pre class="bg-surface-container-highest p-3 rounded-lg text-sm mb-3"><code>import SquigglySlider from './SquigglySlider.jsx'</code></pre>
+                        <p class="text-sm">Use the component (note the camelCase props):</p>
+                    </div>
+                {:else if framework === 'javascript'}
+                    <div class="text-left">
+                        <h2 class="font-bold text-lg mb-2">JavaScript/Web Component Usage</h2>
+                        <p class="text-sm mb-3">The Web Component can be found at:</p>
+                        <pre class="bg-surface-container-highest p-3 rounded-lg text-sm mb-3"><code>src/lib/SquigglySlider.js</code></pre>
+                        <p class="text-xs mb-1"><a href="https://github.com/raayyananan/squiggly-sliders/blob/main/src/lib/SquigglySlider.js" target="_blank" class="text-primary hover:underline">View on GitHub →</a></p>
+                        <p class="text-sm mb-3">Or the element implementation:</p>
+                        <pre class="bg-surface-container-highest p-3 rounded-lg text-sm mb-3"><code>src/lib/web/SquigglySliderElement.js</code></pre>
+                        <p class="text-xs mb-1"><a href="https://github.com/raayyananan/squiggly-sliders/blob/main/src/lib/web/SquigglySliderElement.js" target="_blank" class="text-primary hover:underline">View on GitHub →</a></p>
+                        <p class="text-sm mb-3">Copy one of these files into your project and import it, or import it from a built file if published.</p>
+                        <p class="text-sm">Use the component with dash-case attributes:</p>
+                    </div>
+                {/if}
+                <div class="text-left">
+                    <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSnippet(currentSnippet)}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>        
+{/if}
