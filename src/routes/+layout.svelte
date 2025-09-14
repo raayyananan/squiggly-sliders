@@ -1,7 +1,9 @@
 <script>
+    import { onMount } from "svelte";
     import { fade } from "svelte/transition";
     import "../app.scss";
     // import { Toaster } from "svelte-sonner";
+    import { preloadImages } from "../lib/preloadImages.js";
     let activeColor = '--slider-color-1',
     passiveColor = '--slider-passive-color-2'
     let activePickerOpen = false, passivePickerOpen = false;
@@ -21,6 +23,8 @@
         '--slider-passive-color-3',
         '--slider-passive-color-4',
     ]
+    const imagesToPreload = ['/pin image 1.png', '/pin image 2.png'];
+    onMount(() => { preloadImages(imagesToPreload); });
 </script>
 
 <!-- <Toaster /> -->
