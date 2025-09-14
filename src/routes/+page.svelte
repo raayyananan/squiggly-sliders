@@ -10,6 +10,15 @@
     import { onMount } from 'svelte';
     import Modal from '../lib/modal.svelte';
     import { generateSnippet } from '$lib/generateSnippet.js';
+    
+    // Import highlight.js
+    import hljs from 'highlight.js/lib/core';
+    import javascript from 'highlight.js/lib/languages/javascript';
+    import xml from 'highlight.js/lib/languages/xml';
+    
+    // Register languages
+    hljs.registerLanguage('javascript', javascript);
+    hljs.registerLanguage('xml', xml);
 
     let sliders = [
     ];
@@ -74,13 +83,10 @@
         return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
     function highlightSvelte(code) {
-        let html = escapeHtml(code ?? '');
-        html = html.replace(/('[^']*'|\"[^\"]*\")/g, '<span class="tok-string">$1</span>');
-        html = html.replace(/(&lt;\/?)([A-Za-z][\w:-]*)/g, '$1<span class="tok-tag">$2</span>');
-        html = html.replace(/(\s)([a-zA-Z_:][\w:.-]*)(=)/g, '$1<span class="tok-attr">$2</span>$3');
-        html = html.replace(/\b(import|from|const|let|return|export|as)\b/g, '<span class="tok-key">$1</span>');
-        html = html.replace(/([^\w#])([0-9]+(?:\.[0-9]+)?)/g, '$1<span class="tok-number">$2</span>');
-        return html;
+        if (!code) return '';
+        // Use highlight.js to highlight the code
+        const highlighted = hljs.highlight(code, { language: 'xml' }).value;
+        return highlighted;
     }
 
     let idCount = 0;
@@ -568,7 +574,7 @@
                     <button on:click={copySnippet} class="absolute top-2 right-2 increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
                         <div class="material-symbols-rounded text-base">content_copy</div>
                     </button>
-                    <pre class="max-h-[40vh] overflow-auto p-3 md:p-4 text-[13px] leading-5 font-mono"><code>{@html highlightSvelte(currentSnippet)}</code></pre>
+                    <pre class="max-h-[40vh] overflow-auto p-3 md:p-4 text-[13px] leading-5 font-mono"><code class="hljs">{@html highlightSvelte(currentSnippet)}</code></pre>
                 </div>
 
                 <div class="flex w-full justify-end">
