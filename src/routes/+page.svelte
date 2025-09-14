@@ -749,12 +749,19 @@
     .tok-attr{color:#e0af68}
     .tok-string{color:#9ece6a}
     .tok-number{color:#ff9e64}
+
+    .ios-nav-in { animation: ios-nav-in 750ms cubic-bezier(0, 0.885, 0.32, 1); animation-delay: inherit; }
+    @keyframes ios-nav-in {
+        0% {opacity: 0; scale: 1.25; filter: blur(8px); translate: 0 25px;}
+        72% {scale: 0.98;}
+        100% {opacity: 1; scale: 1; filter: blur(0px);}
+    }
 </style>
 
 
 {#if instructionsModalVisible}
     <div in:fade={{duration: 300, easing: cubicOut}} out:fade={{duration: 200, easing: cubicOut}} on:click={() => {instructionsModalVisible = false}} class="fixed top-0 left-0 w-full h-full backdrop-blur-lg z-30 bg-[rgba(253,249,236,0.85)] dark:bg-[rgba(20,20,12,.85)]"></div>
-    <div in:scale={{duration: 300, easing: cubicOut}} out:scale={{duration: 200, easing: cubicOut}} class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-108 z-30">
+    <div out:scale={{duration: 150, easing: cubicOut, start: 0.9}} class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] md:w-108 z-30">
         <div class="ios-nav-in flex flex-col items-center gap-6 w-full h-full p-2 pt-4 bg-surface-container shadow-lg rounded-2xl">
             <button on:click={() => {instructionsModalVisible = false}} style="scale: 0;" 
                 class="scale-up animation-delay-50 easing-elastic absolute top-0 right-4 -mt-4 rounded-full button-shadow-default1 border border-dashed border-outline-variant dark:border-outline-variant h-8 w-8 bg-surface-container-high text-outline lg:text-on-surface flex items-center justify-center md:hover:brightness-95 active:brightness-95 md:active:brightness-[.93] active:scale-95 transition-all duration-100 flex-shrink-0">
