@@ -9,6 +9,7 @@
     import ColorPicker from 'svelte-awesome-color-picker';
     import { onMount } from 'svelte';
     import Modal from '../lib/modal.svelte';
+    import { generateSnippet } from '$lib/generateSnippet.js';
 
     let sliders = [
     ];
@@ -28,12 +29,53 @@
     let controlCentreDown = false;
     let toasterPosition = 'bottom-left';
 
+    let includeThemeVars = false;
+    let codeOpen = true;
+    const importPath = 'squiggly-sliders';
+    const snippetValue = 6;
+    const minVal = 0;
+    const maxVal = 10;
+    const stepVal = 1;
+
+    $: currentSnippet = generateSnippet({
+        activeColor,
+        passiveColor,
+        activeAmplitude,
+        passiveAmplitude,
+        activeWavelength,
+        passiveWavelength,
+        speedFactor,
+        value: snippetValue,
+        min: minVal,
+        max: maxVal,
+        step: stepVal,
+    }, importPath, includeThemeVars);
+
     onMount(() => {
         controlCentreDown = false;
         if (window.innerWidth <= 648) {
             toasterPosition = 'top-left';
         }
+        try {
+            const saved = localStorage.getItem('sq_inc_theme_vars');
+            includeThemeVars = saved ? saved === '1' : false;
+        } catch (e) {}
     })
+
+    $: (() => { try { localStorage.setItem('sq_inc_theme_vars', includeThemeVars ? '1' : '0'); } catch (e) {} })();
+
+    async function copySnippet() {
+        try {
+            await navigator.clipboard.writeText(currentSnippet);
+            toast.success('Snippet copied to clipboard!', {
+                classes: {
+                    toast: "raleway flex items-center rounded-xl h-12 md:easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
+                }
+            });
+        } catch (err) {
+            toast.error('Failed to copy snippet');
+        }
+    }
 
     let idCount = 0;
     const addSlider = (
@@ -514,6 +556,23 @@
                     <div class="w-80">
                         <SquigglySlider value={6} active={activeColor} passive={passiveColor} activeAmplitude={activeAmplitude} passiveAmplitude={passiveAmplitude} activeWavelength={activeWavelength} passiveWavelength={passiveWavelength} speedFactor={speedFactor} />
                     </div>
+                </div>
+
+                <div class="hidden md:flex items-center justify-between">
+                    <h2 class="font-extrabold">Code</h2>
+                    <div class="flex items-center gap-2">
+                        <label class="flex items-center gap-2 text-sm text-on-surface">
+                            <input type="checkbox" bind:checked={includeThemeVars}>
+                            <span>Include optional theme variable setter</span>
+                        </label>
+                        <button on:click={copySnippet} class="increment-button rounded-full h-7 px-3 bg-surface-container-highest text-on-surface flex items-center justify-center hover:brightness-95 active:brightness-95 active:scale-95 transition-all">
+                            <div class="material-symbols-rounded text-sm -translate-y-[1px]">content_copy</div>
+                            <div class="text-xs font-bold ml-1">Copy</div>
+                        </button>
+                    </div>
+                </div>
+                <div class="rounded-xl border border-outline-variant bg-surface-container-highest/50 p-3 md:p-4">
+                    <pre class="overflow-x-auto text-[13px] leading-5"><code>{currentSnippet}</code></pre>
                 </div>
 
                 <div class="flex w-full justify-end">
