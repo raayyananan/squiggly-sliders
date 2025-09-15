@@ -29,6 +29,8 @@
   export let importPath = 'squiggly-sliders';
   export let toasterPosition = 'bottom-left';
   export let codeText = '';
+  let internalCodeText = '';
+  $: internalCodeText = codeText;
 
   // Ephemeral UI-only state
   let controlCentreDown = false;
@@ -415,7 +417,7 @@
               <div class="material-symbols-rounded text-base">content_copy</div>
             </button>
           </div>
-          <textarea class="w-full rounded-xl p-3 font-mono text-[13px] leading-5 bg-inverse-surface text-inverse-on-surface border border-outline-variant outline-none focus-visible:border-primary min-h-40" value={codeText} on:input={(e) => emitChange('codeText', e.target.value)} />
+          <textarea class="w-full rounded-xl p-3 font-mono text-[13px] leading-5 bg-inverse-surface text-inverse-on-surface border border-outline-variant outline-none focus-visible:border-primary min-h-40" bind:value={internalCodeText} on:input={() => emitChange('codeText', internalCodeText)} />
         </div>
 
         <div class="flex w-full justify-end">

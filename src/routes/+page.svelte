@@ -58,6 +58,21 @@
     if (typeof val === 'number' || typeof val === 'boolean') return `{${val}}`;
     return `{'${escapeSingleQuotes(val)}'}`;
   }
+  function setOrInsertAttribute(name, val) {
+    const formatted = formatAttrValue(val);
+    const attrRe = new RegExp(`(\\b${name}\\s*=\\s*)({[^}]*}|\"(?:[^\"\\]|\\.)*\"|'(?:[^'\\]|\\.)*')`);
+    if (attrRe.test(codeText)) {
+      codeText = codeText.replace(attrRe, `$1${formatted}`);
+    } else {
+      const start = codeText.indexOf('<SquigglySlider');
+      if (start === -1) return;
+      const end = codeText.indexOf('>', start);
+      if (end === -1) return;
+      const isSelfClosing = codeText[end - 1] === '/';
+      const insertPos = isSelfClosing ? end - 1 : end;
+      codeText = codeText.slice(0, insertPos) + `\n  ${name}=${formatted}` + codeText.slice(insertPos);
+    }
+  }
   function parsePropsFromCode(text) {
     const props = {};
     if (!text) return props;
@@ -140,24 +155,31 @@
         break;
       case 'activeAmplitude':
         activeAmplitude = Number(value);
+        setOrInsertAttribute('activeAmplitude', activeAmplitude);
         break;
       case 'passiveAmplitude':
         passiveAmplitude = Number(value);
+        setOrInsertAttribute('passiveAmplitude', passiveAmplitude);
         break;
       case 'activeWavelength':
         activeWavelength = Number(value);
+        setOrInsertAttribute('activeWavelength', activeWavelength);
         break;
       case 'passiveWavelength':
         passiveWavelength = Number(value);
+        setOrInsertAttribute('passiveWavelength', passiveWavelength);
         break;
       case 'speedFactor':
         speedFactor = Number(value);
+        setOrInsertAttribute('speedFactor', speedFactor);
         break;
       case 'activeColor':
         activeColor = String(value);
+        setOrInsertAttribute('active', activeColor);
         break;
       case 'passiveColor':
         passiveColor = String(value);
+        setOrInsertAttribute('passive', passiveColor);
         break;
       case 'activeRgb':
         activeRgb = value;
@@ -167,19 +189,21 @@
         break;
       case 'minVal':
         minVal = Number(value);
+        setOrInsertAttribute('min', minVal);
         break;
       case 'maxVal':
         maxVal = Number(value);
+        setOrInsertAttribute('max', maxVal);
         break;
       case 'stepVal':
         stepVal = Number(value);
+        setOrInsertAttribute('step', stepVal);
         break;
       case 'snippetValue':
         snippetValue = Number(value);
+        setOrInsertAttribute('value', snippetValue);
         break;
       case 'importPath':
-        // Not used in generator currently; still accept
-        // importPath is const in this page in current setup
         break;
       case 'toasterPosition':
         toasterPosition = String(value);
@@ -190,10 +214,8 @@
         applyParsedProps(props);
         break;
       default:
-        // Unknown key ignored
         break;
     }
-    recomputeSnippet();
   }
 </script>
 
