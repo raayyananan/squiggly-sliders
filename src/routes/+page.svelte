@@ -39,36 +39,133 @@
     let toasterPosition = 'bottom-left';
 
     const importPath = 'squiggly-sliders';
-    const snippetValue = 6;
-    const minVal = 0;
-    const maxVal = 10;
-    const stepVal = 1;
 
-    $: currentSnippet = generateSnippet({
-        activeColor,
-        passiveColor,
-        activeAmplitude,
-        passiveAmplitude,
-        activeWavelength,
-        passiveWavelength,
-        speedFactor,
-        value: snippetValue,
-        min: minVal,
-        max: maxVal,
-        step: stepVal,
-    }, importPath);
+    // Code-editor driven props (value/min/max/step)
+    let snippetValue = 6;
+    let minVal = 0;
+    let maxVal = 10;
+    let stepVal = 1;
+
+    // Full-duplex code block state
+    let codeText = '';
+    
+    let codeProps = {};
+
+    function highlightSvelte(code) {
+        if (!code) return '';
+        const highlighted = hljs.highlight(code, { language: 'xml' }).value;
+        return highlighted;
+    }
+
+    function escapeSingleQuotes(str) {
+        return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    function formatAttrValue(val) {
+        if (typeof val === 'number' || typeof val === 'boolean') return `{${val}}`;
+        return `{'${escapeSingleQuotes(val)}'}`;
+    }
+
+    function toColorStyle(v) {
+        if (!v) return '';
+        return (typeof v === 'string' && v.startsWith('--')) ? `var(${v})` : v;
+    }
+
+    function parsePropsFromCode(text) {
+        const props = {};
+        if (!text) return props;
+        const tagMatch = text.match(/<\s*SquigglySlider\b([\s\S]*?)\/*>/);
+        if (!tagMatch) return props;
+        const attrs = tagMatch[1] || '';
+        const re = /(\b[\w$]+)\s*=\s*({[^}]*}|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g;
+        let m;
+        while ((m = re.exec(attrs)) !== null) {
+            const key = m[1];
+            let raw = m[2].trim();
+            let v;
+            if (raw.startsWith('{') && raw.endsWith('}')) {
+                raw = raw.slice(1, -1).trim();
+                if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
+                    v = raw.slice(1, -1);
+                } else if (/^(true|false)$/i.test(raw)) {
+                    v = raw.toLowerCase() === 'true';
+                } else if (!isNaN(Number(raw))) {
+                    v = Number(raw);
+                } else {
+                    v = raw;
+                }
+            } else {
+                if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
+                    v = raw.slice(1, -1);
+                } else {
+                    v = raw;
+                }
+            }
+            props[key] = v;
+        }
+        return props;
+    }
+
+    function setOrInsertAttribute(name, val) {
+        const formatted = formatAttrValue(val);
+        const attrRe = new RegExp(`(\\b${name}\\s*=\\s*)({[^}]*}|\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*')`);
+        if (attrRe.test(codeText)) {
+            codeText = codeText.replace(attrRe, `$1${formatted}`);
+        } else {
+            const start = codeText.indexOf('<SquigglySlider');
+            if (start === -1) return;
+            const end = codeText.indexOf('>', start);
+            if (end === -1) return;
+            const isSelfClosing = codeText[end - 1] === '/';
+            const insertPos = isSelfClosing ? end - 1 : end;
+            codeText = codeText.slice(0, insertPos) + `\n  ${name}=${formatted}` + codeText.slice(insertPos);
+        }
+    }
+
+    function applyParsedProps(props) {
+        codeProps = props;
+        if ('active' in props) activeColor = props.active;
+        if ('passive' in props) passiveColor = props.passive;
+        if ('activeAmplitude' in props && typeof props.activeAmplitude === 'number') activeAmplitude = props.activeAmplitude;
+        if ('passiveAmplitude' in props && typeof props.passiveAmplitude === 'number') passiveAmplitude = props.passiveAmplitude;
+        if ('activeWavelength' in props && typeof props.activeWavelength === 'number') activeWavelength = props.activeWavelength;
+        if ('passiveWavelength' in props && typeof props.passiveWavelength === 'number') passiveWavelength = props.passiveWavelength;
+        if ('speedFactor' in props && typeof props.speedFactor === 'number') speedFactor = props.speedFactor;
+        if ('value' in props && (typeof props.value === 'number')) snippetValue = props.value;
+        if ('min' in props && (typeof props.min === 'number')) minVal = props.min;
+        if ('max' in props && (typeof props.max === 'number')) maxVal = props.max;
+        if ('step' in props && (typeof props.step === 'number')) stepVal = props.step;
+    }
+
+    function parseAndApplyCode(text) {
+        const props = parsePropsFromCode(text);
+        applyParsedProps(props);
+    }
 
     onMount(() => {
         controlCentreDown = false;
         if (window.innerWidth <= 648) {
             toasterPosition = 'top-left';
         }
+        codeText = generateSnippet({
+            activeColor,
+            passiveColor,
+            activeAmplitude,
+            passiveAmplitude,
+            activeWavelength,
+            passiveWavelength,
+            speedFactor,
+            value: snippetValue,
+            min: minVal,
+            max: maxVal,
+            step: stepVal,
+        }, importPath);
+        parseAndApplyCode(codeText);
     })
-
 
     async function copySnippet() {
         try {
-            await navigator.clipboard.writeText(currentSnippet);
+            await navigator.clipboard.writeText(codeText);
             toast.success('Snippet copied to clipboard!', {
                 classes: {
                     toast: "raleway flex items-center rounded-xl h-12 md:easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
@@ -77,16 +174,6 @@
         } catch (err) {
             toast.error('Failed to copy snippet');
         }
-    }
-
-    function escapeHtml(s) {
-        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-    function highlightSvelte(code) {
-        if (!code) return '';
-        // Use highlight.js to highlight the code
-        const highlighted = hljs.highlight(code, { language: 'xml' }).value;
-        return highlighted;
     }
 
     let idCount = 0;
@@ -102,17 +189,8 @@
         ) => 
     {   
         if (typeof window !== 'undefined') {
-            // if ((sliders.length - 1) * (50 + 16 * 4) > window.innerHeight) {
-            //     toast.error(`Please remove a slider to add another`, {
-            //         classes: {
-            //             toast: "raleway flex items-center rounded-xl h-12 easing-decelerate shadow-md border-none bg-inverse-surface text-inverse-on-surface dark:bg-secondary-fixed dark:text-inverse-on-secondary-fixed"
-            //         }
-            //     })
-            //     return;
-            // }
             setTimeout(() => {
                 if (sliders.length <= 4) return;
-                // controlCentreDown = true;
                 const slidersContainer = document.querySelector('.sliders-container');
                 slidersContainer.scrollTo({
                     top: slidersContainer.scrollHeight,
@@ -154,6 +232,15 @@
         activeWavelength = slider.activeWavelength;
         passiveWavelength = slider.passiveWavelength;
         speedFactor = slider.speedFactor;
+        // Sync into code block
+        setOrInsertAttribute('active', activeColor);
+        setOrInsertAttribute('passive', passiveColor);
+        setOrInsertAttribute('activeAmplitude', activeAmplitude);
+        setOrInsertAttribute('passiveAmplitude', passiveAmplitude);
+        setOrInsertAttribute('activeWavelength', activeWavelength);
+        setOrInsertAttribute('passiveWavelength', passiveWavelength);
+        setOrInsertAttribute('speedFactor', speedFactor);
+        parseAndApplyCode(codeText);
         controlCentreDown = false;
         toast.success(` Properties copied to custom slider`, {
             classes: {
@@ -167,23 +254,29 @@
         switch (prop) {
             case 'activeAmplitude':
                 activeAmplitude = Math.max(Math.min(operation === '+' ? activeAmplitude + 1 : activeAmplitude - 1, 7), 0);
+                setOrInsertAttribute('activeAmplitude', activeAmplitude);
                 break;
             case 'passiveAmplitude':
                 passiveAmplitude = Math.max(Math.min(operation === '+' ? passiveAmplitude + 1 : passiveAmplitude - 1, 7), 0);
+                setOrInsertAttribute('passiveAmplitude', passiveAmplitude);
                 break;
             case 'activeWavelength':
                 activeWavelength = Math.max(Math.min(operation === '+' ? activeWavelength + .25 : activeWavelength - .25, 7), 0.25);
+                setOrInsertAttribute('activeWavelength', activeWavelength);
                 break;
             case 'passiveWavelength':
                 passiveWavelength = Math.max(Math.min(operation === '+' ? passiveWavelength + .25 : passiveWavelength - .25, 7), 0.25);
+                setOrInsertAttribute('passiveWavelength', passiveWavelength);
                 break;
             case 'speedFactor':
                 speedFactor = Math.max(Math.min(operation === '+' ? speedFactor + 1 : speedFactor - 1, 8), 1)
+                setOrInsertAttribute('speedFactor', speedFactor);
                 break;
             default:
                 console.error('Invalid property');
                 return;
         }
+        parseAndApplyCode(codeText);
         incrementDirection = operation === '+' ? 1 : -1;
     }
 
@@ -195,28 +288,19 @@
         activeWavelength = aW;
         passiveWavelength = pW;
         speedFactor = s;
+        setOrInsertAttribute('active', activeColor);
+        setOrInsertAttribute('passive', passiveColor);
+        setOrInsertAttribute('activeAmplitude', activeAmplitude);
+        setOrInsertAttribute('passiveAmplitude', passiveAmplitude);
+        setOrInsertAttribute('activeWavelength', activeWavelength);
+        setOrInsertAttribute('passiveWavelength', passiveWavelength);
+        setOrInsertAttribute('speedFactor', speedFactor);
+        parseAndApplyCode(codeText);
     }
 
     function resetProperties() {
         setProperties('--md-sys-color-primary', '--md-sys-color-on-surface', 4, 2, 1, 1, 4)
     }
-
-    // function inputColor(e, type) {
-    //     switch (type) {
-    //         case 'active':
-    //             activeColor = e.detail.hex; 
-    //             // rgb = {
-    //             //     r: e.detail.rgb.r,
-    //             //     g: e.detail.rgb.g,
-    //             //     b: e.detail.rgb.b
-    //             // }
-    //             // document.documentElement.style.setProperty('--md-sys-color-primary', activeColor);
-    //             break;
-    //         case 'passive':
-    //             passiveColor = e.detail.hex; 
-    //             break;
-    //     }
-    // }
 
     function toggleControlCentre() {
         controlCentreDown = !controlCentreDown;
@@ -267,10 +351,6 @@
         velocity = (point2.y - point1.y) / (point2.time - point1.time);
         const dT = point2.y - start;
         controlCentreCard.style.translate = `0 ${initialTranslation + dT}px`;
-        // if (dT > 75) {
-        //     swipeEnd();
-        // }
-
     }
     function swipeEnd() {
         if (velocity == 0) return;
@@ -331,14 +411,6 @@
             <div class="hidden md:flex w-full card-background pl-4 md:pl-6 pr-2 shadow shadow-black/15 rounded-2xl flex-col gap-4">
                 <div class="h-16 flex items-center justify-between">
                     <h2 class="font-extrabold">Squiggly Sliders</h2>
-                    <!-- <Modal classes="justify-end">
-                        <div class="global-theme-button button-shadow-left flex items-center w-36 justify-center h-full primary-gradient-background text-on-primary rounded-r-2xl group md:active:brightness-95">
-                            <div class="flex items-center gap-2 group-active:scale-[0.95] transition-transform duration-75">
-                                <div class="text-sm font-bold">About</div>
-                                <div class="text-lg material-symbols-rounded bold -translate-y-px origin-bottom-right">keyboard_arrow_down</div>
-                            </div>
-                        </div>
-                    </Modal> -->
                     <Modal classes="items-center">
                         <button role="button" aria-label="button"
                         class="global-theme-button relative button cursor-pointer flex-shrink-0 text-on-primary h-12 min-w-12 px-[15px] button-shadow-default rounded-xl flex items-center justify-center gap-2 text-sm overflow-hidden
@@ -386,7 +458,7 @@
                            {activePickerOpen ? 
                                 'w-[calc(100%_+_80px)] translate-x-5 md:translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface dark:text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-l-2xl easing-bounce-out-light' : 
                                 'w-full h-full rounded-l-2xl easing-emphasized z-0'}"
-                            style="{activePickerOpen ? '' : `background-color: var(${activeColor})`}">
+                            style="{activePickerOpen ? '' : `background-color: ${toColorStyle(activeColor)}`}">
 
                         <div class="absolute top-0 left-0 w-full h-full bg-light-gradient rounded-l-xl {activePickerOpen && 'opacity-0'}"></div>
                             
@@ -426,7 +498,7 @@
                            {passivePickerOpen ? 
                                 'w-[calc(100%_+_80px)] -translate-x-5 md:-translate-x-3 translate-y-4 bg-inverse-surface text-inverse-on-surface dark:text-inverse-on-surface h-40 rounded-2xl z-10 shadow-xl rounded-r-2xl easing-bounce-out-light' : 
                                 'w-full h-full rounded-r-2xl easing-emphasized'}"
-                            style="{passivePickerOpen ? '' : `background-color: var(${passiveColor}); color: var(${passiveColor}-text);`}">
+                            style="{passivePickerOpen ? '' : `background-color: ${toColorStyle(passiveColor)}${(typeof passiveColor === 'string' && passiveColor.startsWith('--')) ? '; color: var(' + passiveColor + '-text)' : ''}`}">
 
                         <div class="absolute top-0 left-0 w-full h-full bg-light-gradient rounded-l-xl {passivePickerOpen && 'opacity-0'}"></div>
                             
@@ -459,7 +531,7 @@
                 <div class="flex flex-col gap-4 mt-3">
                     <div class="flex items-center w-full justify-between">
                         <div class="flex gap-3 items-center">
-                            <button on:click={() => {updateProperty('activeAmplitude', '-')}} class="increment-button rounded-full h-7 w-7 bg-surface-container-highest text-on-surface flex items-center justify-center md:hover:brightness-[.98] active:brightness-95 md:active:brightness-95 active:scale-90 active:duration-[15ms] duration-100 transition-all">
+                            <button on:click={() => {updateProperty('activeAmplitude', '-') }} class="increment-button rounded-full h-7 w-7 bg-surface-container-highest text-on-surface flex items-center justify-center md:hover:brightness-[.98] active:brightness-95 md:active:brightness-95 active:scale-90 active:duration-[15ms] duration-100 transition-all">
                                 <div class="material-symbols-rounded text-base bold">remove</div>
                             </button>
                             <div class="font-bold text-base w-4 flex justify-center -translate-y-0.5">{activeAmplitude}</div>
@@ -468,7 +540,6 @@
                             </button>
                         </div>
                         <div class="font-bold flex items-center gap-2 text-sm">
-                            <!-- <div class="material-symbols-rounded text-base font-bold">genetics</div> -->
                             Amplitude
                         </div>
                         <div class="flex gap-3 items-center">
@@ -493,7 +564,6 @@
                             </button>
                         </div>
                         <div class="font-bold flex items-center gap-2 text-sm">
-                            <!-- <div class="material-symbols-rounded text-base font-bold">straighten</div> -->
                             Wavelength
                         </div>
                         <div class="flex gap-3 items-center">
@@ -514,7 +584,6 @@
                             </button>
                         </div>
                         <div class="font-bold flex items-center gap-2 text-sm">
-                            <!-- <div class="material-symbols-rounded text-base font-bold">speed</div> -->
                             Spee
                             <div class="font-bold text-base flex justify-center -translate-y-px gap-1">
                                 ( 
@@ -547,12 +616,10 @@
                         </button>
                         <button on:click={() => {setProperties('--slider-color-5', '--slider-passive-color-2', 4, 0, 0.1, 2, 1)}} 
                             class="flex-1 flex items-center justify-center rounded-r-xl hover:bg-surface-container-highest active:brightness-[.98]">
-                            <svg class="saturate-0 dark:invert h-3 w-3 rotate-90" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M256 0c53 0 96 43 96 96v3.6c0 15.7-12.7 28.4-28.4 28.4H188.4c-15.7 0-28.4-12.7-28.4-28.4V96c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4H312c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H416c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6V240c0-8.8-7.2-16-16-16s-16 7.2-16 16V479.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96.3c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"/></svg>
+                            <svg class="saturate-0 dark:invert h-3 w-3 rotate-90" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 0c53 0 96 43 96 96v3.6c0 15.7-12.7 28.4-28.4 28.4H188.4c-15.7 0-28.4-12.7-28.4-28.4V96c0-53 43-96 96-96zM41.4 105.4c12.5-12.5 32.8-12.5 45.3 0l64 64c.7 .7 1.3 1.4 1.9 2.1c14.2-7.3 30.4-11.4 47.5-11.4H312c17.1 0 33.2 4.1 47.5 11.4c.6-.7 1.2-1.4 1.9-2.1l64-64c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-64 64c-.7 .7-1.4 1.3-2.1 1.9c6.2 12 10.1 25.3 11.1 39.5H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H416c0 24.6-5.5 47.8-15.4 68.6c2.2 1.3 4.2 2.9 6 4.8l64 64c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-63.1-63.1c-24.5 21.8-55.8 36.2-90.3 39.6V240c0-8.8-7.2-16-16-16s-16 7.2-16 16V479.2c-34.5-3.4-65.8-17.8-90.3-39.6L86.6 502.6c-12.5 12.5-12.5 32.8 0 45.3s-32.8 12.5-45.3 0l64-64c1.9-1.9 3.9-3.4 6-4.8C101.5 367.8 96 344.6 96 320H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96.3c1.1-14.1 5-27.5 11.1-39.5c-.7-.6-1.4-1.2-2.1-1.9l-64-64c-12.5-12.5-12.5-32.8 0-45.3z"/></svg>
                         </button>
                     </div>
-                    <!-- <div class="w-full h-px bg-outline-variant"></div> -->
                 </div>
-
 
                 <div class="hidden md:flex items-center justify-between">
                     <h2 class="font-extrabold">Preview</h2>
@@ -566,15 +633,19 @@
                     </div>
                     {/if}
                     <div class="w-80">
-                        <SquigglySlider value={6} active={activeColor} passive={passiveColor} activeAmplitude={activeAmplitude} passiveAmplitude={passiveAmplitude} activeWavelength={activeWavelength} passiveWavelength={passiveWavelength} speedFactor={speedFactor} />
+                        <SquigglySlider {...codeProps} />
                     </div>
                 </div>
 
                 <div class="relative text-surface">
-                    <button on:click={copySnippet} class="absolute top-2 right-2 increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
-                        <div class="material-symbols-rounded text-base">content_copy</div>
-                    </button>
-                    <pre class="overflow-auto p-0 text-[13px] leading-5 font-mono"><code class="hljs rounded-xl">{@html highlightSvelte(currentSnippet)}</code></pre>
+                    <div class="absolute top-2 right-2 flex gap-2">
+                        <button on:click={copySnippet} class="increment-button rounded-full h-7 w-7 flex items-center justify-center hover:brightness-110 active:scale-95 transition-all" aria-label="Copy code">
+                            <div class="material-symbols-rounded text-base">content_copy</div>
+                        </button>
+                    </div>
+                    <textarea class="w-full rounded-xl p-3 font-mono text-[13px] leading-5 bg-inverse-surface text-inverse-on-surface border border-outline-variant outline-none focus-visible:border-primary min-h-40"
+                              bind:value={codeText}
+                              on:input={(e) => parseAndApplyCode(e.target.value)} />
                 </div>
 
                 <div class="flex w-full justify-end">
@@ -704,8 +775,3 @@
     .tok-string{color:#9ece6a}
     .tok-number{color:#ff9e64}
 </style>
-
-<!-- <input type="text" class="w-full h-12 border border-surface-container-high placeholder:text-outline-variant
-text-sm rounded-lg px-2 bg-surface-container-low font-semibold placeholder:transition-transform overflow-visible placeholder:origin-top-left focus-visible:pt-2 transition-all
-focus-visible:outline-primary focus-visible:placeholder:-translate-y-4 focus-visible:placeholder:scale-75 focus-visible:placeholder:text-primary
-" value="" placeholder="Active Amplitude (6)" /> -->
