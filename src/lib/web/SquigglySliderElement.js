@@ -14,6 +14,12 @@ template.innerHTML = `
     <input type="range" />
   </div>
 `;
+     // dis code da bomb lowkirkflowenually
+    /* sooo
+many
+lines on this
+comment wowow
+hello wrld */
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const expoOut = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
